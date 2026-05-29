@@ -1,0 +1,106 @@
+.container {
+    width: 100%;
+    height: 95%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    box-shadow: 0 12 0 15px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+}
+
+.header {
+    width: 100%;
+    padding-bottom: .5%;
+    padding-top: 1%;
+    border-bottom: 1px solid black;
+    margin-bottom: 1%;
+}
+
+.heading {
+    font-weight: 900;
+    color: #111827;
+}
+
+.subHeading {
+    color: #6b7280;
+}
+
+.accountCard {
+    margin-bottom: 3%;
+    width: 100%;
+    height: 15%;
+    border: 1px solid #b1b1b1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: inset 0 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.buttonsContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.historyList {
+    width: 100%;
+    height: 53%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10% 3%;
+    overflow-y: scroll;
+    border: 1px solid #b1b1b1;
+    align-items: center;
+    justify-content: center;
+    padding-top: 3%;
+    padding-bottom: 3%;
+    box-shadow: inset 0 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.historyCard {
+    width: 30%;
+    height: fit-content;
+    border: 1px solid #b1b1b1;
+    box-shadow: inset 0 0 0 10px rgba(0, 0, 0, 0.05);
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.historyCard:hover {
+    transform: scale(1.1);
+    box-shadow: inset 0 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.historyLabel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    border-top-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    text-transform: uppercase;
+}
+
+.topup {
+    background-color: #009305;
+}
+
+.payment {
+    background-color: hsl(4, 100%, 36%);
+}
+
+.refund {
+    background-color: #004396;
+}
+
+.HistoryIndex {
+    color: rgb(0, 102, 255);
+    font-weight: 700;
+}

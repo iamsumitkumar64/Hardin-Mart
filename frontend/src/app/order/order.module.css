@@ -1,0 +1,140 @@
+.container {
+    width: 100%;
+    height: 95%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    box-shadow: 0 12 0 15px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+}
+
+.header {
+    width: 100%;
+    padding-bottom: .5%;
+    padding-top: 1%;
+    border-bottom: 1px solid black;
+    margin-bottom: 1%;
+}
+
+.heading {
+    font-weight: 900;
+    color: #111827;
+}
+
+.subHeading {
+    color: #6b7280;
+}
+
+.scrollWrapper {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding-right: 1%;
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.endMessage {
+    text-align: center;
+    color: #6b7280;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.orderCard {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 15px;
+    border: 1px solid #b1b1b1;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.orderLabel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0.25rem 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    /* border-top-left-radius: 16px; */
+    border-bottom-right-radius: 16px;
+    text-transform: uppercase;
+    background-color: #00649d;
+}
+
+.orderDetail {
+    width: 100%;
+    height: 100%;
+    /* display: flex; */
+    /* flex-direction: column;
+    justify-content: center; */
+    /* align-items: center;  */
+    gap: 1rem;
+    position: relative;
+}
+
+.orderDetailMetaData {
+    position: absolute;
+    top: 20;
+    right: 20;
+}
+
+.stepper {
+    width: 100%;
+    margin: 2% 0;
+}
+
+.slidercomp {
+    width: 100%;
+    height: 100%;
+    /* background-color: rgb(44, 44, 44); */
+    padding: 1%;
+    margin-top: 1%;
+    border-radius: 16px;
+    border: 1px solid rgb(168, 167, 167);
+    box-shadow: inset 0 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.itemCard {
+    padding: 1%;
+    /* border: 1px solid #58aeff; */
+    border-radius: 16px;
+}
+
+.itemCard:hover {
+    border: 1px solid rgb(183, 183, 183);
+    box-shadow: inset 0 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.imageWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.itemImage {
+    width: 70%;
+    border-radius: 16px;
+    box-shadow: 0 0 0 2px rgb(172, 172, 172);
+}
+
+.itemContent {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}

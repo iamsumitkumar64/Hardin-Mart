@@ -1,0 +1,13 @@
+import { Module } from "@nestjs/common";
+import { GetOrderListingController } from "./get-orders.controller";
+import { GetOrderListingService } from "./get-orders.service";
+import { OrderRepository } from "src/module/shipment-module/infrastructure/repository/order.repository";
+
+@Module({
+    imports: [],
+    controllers: [GetOrderListingController],
+    providers: [GetOrderListingService, OrderRepository],
+    exports: [],
+})
+
+export class GetOrderListingModule { }

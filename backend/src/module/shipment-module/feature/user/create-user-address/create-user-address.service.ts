@@ -1,0 +1,29 @@
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { UserRepository } from "src/module/user-module/infrastructure/repository/user.repository";
+import { CreateUserAddressDto } from "./create-user-address.dto";
+import { UserEntity } from "src/module/shipment-module/domain/user/user.entity";
+import { UserAddressRepository } from "src/module/shipment-module/infrastructure/repository/user.address.repository";
+
+@Injectable()
+export class CreateUserAddressService {
+    constructor(
+        private readonly userRepository: UserRepository,
+        private readonly userAddressRepository: UserAddressRepository,
+    ) { }
+
+    async createUserAddress(user: UserEntity, body: CreateUserAddressDto) {
+        if (body.isDefault) {
+            await this.userAddressRepository.unsetOtherDefaults(user.uuid);
+        }
+
+        const data = await this.userAddressRepository.createAddress({
+            ...body,
+            user_uuid: user.uuid,
+        });
+
+        return {
+            data: data,
+            message: "User Address created"
+        }
+    }
+}
