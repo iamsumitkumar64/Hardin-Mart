@@ -1,6 +1,6 @@
 export enum OrderStatusEnum {
     PLACED = 'placed',
     BILLED = 'billed',
-    SHIPPED = 'shipped',
-    DELIVERED = 'delivered',
+    READY_TO_SHIP = 'ready_to_ship',
+    CANCELLED = 'cancelled',
 }
