@@ -21,15 +21,21 @@ import * as SaleUserRegisterHandler from 'src/module/sale-module/feature/user/us
 import * as BillingUserRepo from 'src/module/billing-module/infrastructure/repository/user.repository';
 import * as BillingInboxRepo from 'src/module/billing-module/infrastructure/repository/inbox.repository';
 import * as BillingOrderRepo from 'src/module/billing-module/infrastructure/repository/order.repository';
+import * as BillingBillingRepo from 'src/module/billing-module/infrastructure/repository/billing.repository';
 import * as BillingUserRegisterService from 'src/module/billing-module/feature/user/user-register/user-register.service';
 import * as BillingOrderCreatedService from 'src/module/billing-module/feature/order/order-created/order-created.handler';
+import * as BillingOrderRefundService from 'src/module/billing-module/feature/order/order-refund/order-refund.handler';
 import * as BillingUserRegisteredConsumer from 'src/module/billing-module/infrastructure/rabbit-mq-consumer/user/user-registered/user-registered.consumer';
 import * as BillingOrderCreatedConsumer from 'src/module/billing-module/infrastructure/rabbit-mq-consumer/order/order-created/order-created.consumer';
+import * as BillingOrderRefundConsumer from 'src/module/billing-module/infrastructure/rabbit-mq-consumer/order/order-refund/order-refund.consumer';
 
 // Shipment Module
 import * as ShipmentInboxRepo from 'src/module/shipment-module/infrastructure/repository/inbox.repository';
 import * as ShipmentUserRepo from 'src/module/shipment-module/infrastructure/repository/user.repository';
 import * as ShipmentOrderRepo from 'src/module/shipment-module/infrastructure/repository/order.repository';
+import * as ShipmentOrderItemRepo from 'src/module/shipment-module/infrastructure/repository/order.item.repository';
+import * as ShipmentProductRepo from 'src/module/shipment-module/infrastructure/repository/product.repository';
+import * as ShipmentOutboxRepo from 'src/module/shipment-module/infrastructure/repository/outbox.repository';
 import * as ShipmentUserRegisterService from 'src/module/shipment-module/feature/user/user-register/user-register.handler';
 import * as ShipmentOrderCreatedService from 'src/module/shipment-module/feature/order/order-created/order-created.handler';
 import * as ShipmentOrderPaidService from 'src/module/shipment-module/feature/order/order-paid/order-paid.handler';
@@ -63,14 +69,20 @@ import * as ShipmentOrderPaidConsumer from 'src/module/shipment-module/infrastru
         BillingUserRepo.UserRepository,
         BillingInboxRepo.InboxRepository,
         BillingOrderRepo.OrderRepository,
+        BillingBillingRepo.BillingRepository,
         BillingUserRegisterService.UserRegisterService,
         BillingOrderCreatedService.OrderCreatedService,
+        BillingOrderRefundService.OrderRefundService,
         BillingUserRegisteredConsumer.UserRegisteredConsumer,
         BillingOrderCreatedConsumer.OrderCreatedConsumer,
+        BillingOrderRefundConsumer.OrderRefundConsumer,
 
         // Shipment Module
         ShipmentUserRepo.UserRepository,
         ShipmentOrderRepo.OrderRepository,
+        ShipmentOrderItemRepo.OrderItemRepository,
+        ShipmentProductRepo.ProductRepository,
+        ShipmentOutboxRepo.OutboxRepository,
         ShipmentInboxRepo.InboxRepository,
         ShipmentUserRegisterService.UserRegisterService,
         ShipmentOrderCreatedService.OrderCreatedService,

@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, } from "typeorm";
+import { OrderItemEntity } from "../order-item/order-item.entity";
 
 @Entity("product")
 export class ProductEntity {
@@ -15,6 +16,9 @@ export class ProductEntity {
 
     @Column({ type: "integer", nullable: false, default: 1, })
     stock: number;
+
+    @OneToMany(() => OrderItemEntity, item => item.product)
+    order_item: OrderItemEntity[];
 
     @CreateDateColumn()
     created_at: Date;

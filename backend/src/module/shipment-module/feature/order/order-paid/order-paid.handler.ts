@@ -4,18 +4,57 @@ import { OrderPaidMQEventPayload } from "src/module/common/infrastruture/rabbit-
 import { OrderStatusEnum } from "src/module/shipment-module/domain/order/order.enum";
 import { SocketService } from "src/module/common/infrastruture/socket/socket.service";
 import { SocketEventNameEnum } from "src/module/common/infrastruture/socket/socket.enum";
+import { ProductRepository } from "src/module/shipment-module/infrastructure/repository/product.repository";
+import { OutboxRepository } from "src/module/shipment-module/infrastructure/repository/outbox.repository";
+import { ExchangeNameEnum, RoutingKeyEnum } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
 
 @Injectable()
 export class OrderPaidService {
     constructor(
         private readonly orderRepository: OrderRepository,
+        private readonly productRepository: ProductRepository,
+        private readonly outboxRepository: OutboxRepository,
         private readonly socketService: SocketService,
     ) { }
 
     async handle(order: OrderPaidMQEventPayload) {
-        await this.orderRepository.updateOrderStatus(order.order_uuid, OrderStatusEnum.BILLED);
-        await this.socketService.emitToUser(order.user_uuid, SocketEventNameEnum.ORDER_STATUS_CHANGED, { order_uuid: order.order_uuid, order_status: OrderStatusEnum.BILLED });
+        const orderData = await this.orderRepository.findByUserUuidAndOrderUuid(order.user_uuid, order.order_uuid);
+        if (!orderData) {
+            throw new BadRequestException("Order not found");
+        }
+
+        const hasEnoughStock = await this.checkStock(orderData.items || []);
+        const orderStatus = hasEnoughStock ? OrderStatusEnum.READY_TO_SHIP : OrderStatusEnum.CANCELLED;
+
+        await this.orderRepository.updateOrderStatus(order.order_uuid, orderStatus);
+        await this.socketService.emitToUser(
+            order.user_uuid,
+            SocketEventNameEnum.ORDER_STATUS_CHANGED,
+            { order_uuid: order.order_uuid, order_status: orderStatus }
+        );
+
+        if (!hasEnoughStock) {
+            await this.outboxRepository.createOutboxntry({
+                exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
+                routing_key: RoutingKeyEnum.ORDER_REFUND,
+                message_payload: {
+                    order_uuid: order.order_uuid,
+                    user_uuid: order.user_uuid,
+                    reason: "Stock not available",
+                },
+            });
+        }
 
         return;
+    }
+
+    private async checkStock(items: { product_uuid: string; quantity: number; }[]) {
+        for (const item of items) {
+            const product = await this.productRepository.findByUuid(item.product_uuid);
+            if (!product || item.quantity > product.stock) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, Generated, JoinColu
 import { UserEntity } from "../user/user.entity";
 import { OrderStatusEnum } from "./order.enum";
 import { UserAddressEntity } from "../user_address/user.address.entity";
+import { OrderItemEntity } from "../order-item/order-item.entity";
 
 @Entity('order')
 export class OrderEntity {
@@ -32,6 +33,9 @@ export class OrderEntity {
     @ManyToOne(() => UserAddressEntity, (address) => address.orders)
     @JoinColumn({ name: "address_uuid" })
     address: UserAddressEntity;
+
+    @OneToMany(() => OrderItemEntity, item => item.order)
+    items: OrderItemEntity[];
 
     @CreateDateColumn()
     created_at: Date;

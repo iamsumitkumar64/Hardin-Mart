@@ -27,6 +27,7 @@ export enum RoutingKeyEnum {
 
     ORDER_CREATED = 'order.created',
     ORDER_PAID = 'order.paid',
+    ORDER_REFUND = 'order.refund',
 }
 
 // queue name (module name) + routing key + endfix(queue)
@@ -39,5 +40,6 @@ export enum QueueEnum {
     BILLING_ORDER_CREATED_QUEUE = 'billing.order.created.queue',
     SHIPMENT_ORDER_CREATED_QUEUE = 'shipment.order.created.queue',
 
-    SHIPMENT_ORDER_PAID_QUEUE = 'shipment.order.paid.queue'
+    SHIPMENT_ORDER_PAID_QUEUE = 'shipment.order.paid.queue',
+    BILLING_ORDER_REFUND_QUEUE = 'billing.order.refund.queue'
 }

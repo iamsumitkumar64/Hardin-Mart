@@ -16,13 +16,13 @@ export default function RootSocketListener() {
             const socket = connectSocket(token);
 
             socket.on(SocketEventNameEnum.ORDER__PAYMENT_STATUS_CHANGED, (message) => {
-                enqueueSnackbar(`Order paid`, { variant: "info" });
+                enqueueSnackbar(`Order payment ${message.payment_status}`, { variant: "info" });
                 console.log(message);
                 dispatch(updateBillingOrderStatus(message));
             });
 
             socket.on(SocketEventNameEnum.ORDER_STATUS_CHANGED, (message) => {
-                enqueueSnackbar(`Order paid`, { variant: "info" });
+                enqueueSnackbar(`Order status ${message.order_status}`, { variant: "info" });
                 console.log(message);
                 dispatch(updateShipmentOrderStatus(message));
             });

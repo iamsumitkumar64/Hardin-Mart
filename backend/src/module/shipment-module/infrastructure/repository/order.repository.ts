@@ -54,6 +54,7 @@ export class OrderRepository extends Repository<OrderEntity> {
             },
             relations: {
                 user: true,
+                items: true,
             }
         });
         return user;
