@@ -1,18 +1,18 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { BillingRepository } from "src/module/billing-module/infrastructure/repository/billing.repository";
+import { WalletRepository } from "src/module/billing-module/infrastructure/repository/wallet.repository";
 import { UserEntity } from "src/module/user-module/domain/user/user.entity";
 
 @Injectable()
 export class GetWalletService {
     constructor(
-        private readonly repository: BillingRepository,
+        private readonly repository: WalletRepository,
     ) { }
 
     async getWallet(user: UserEntity) {
-        let wallet = await this.repository.findWallet(user.uuid);
-        if (!wallet) {
-            wallet = await this.repository.createWallet({ user_uuid: user.uuid, balance: 0 });
-        }
+        const wallet = await this.repository.upsertWallet(user.uuid);
+        // if (!wallet) {
+        //     wallet = await this.repository.createWallet({ user_uuid: user.uuid, balance: 0 });
+        // }
 
         return {
             data: wallet,

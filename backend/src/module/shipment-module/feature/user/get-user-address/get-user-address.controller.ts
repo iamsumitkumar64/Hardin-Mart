@@ -8,6 +8,10 @@ export class GetUserAddressController {
 
     @Get()
     async getUserAddress(@Req() req: Request) {
-        return this.getUserAddressService.getUserAddress(req.user);
+        const { data } = await this.getUserAddressService.getUserAddress(req.user);
+        return {
+            data: data,
+            message: "User Address fetched successfully"
+        };
     }
 }

@@ -13,7 +13,7 @@ export class OrderItemRepository extends Repository<OrderItemEntity> {
     }
 
     async createOrderItem(body: Partial<OrderItemEntity>) {
-        const user = this.create(body);
-        return await this.save(user);
+        const orderItem = this.create(body);
+        return await this.save(orderItem);
     }
 }

@@ -1,12 +1,13 @@
 import { Module } from "@nestjs/common";
-import { BillingRepository } from "src/module/billing-module/infrastructure/repository/billing.repository";
 import { AddAmountService } from "./add-amount.service";
 import { AddAmountController } from "./add-amount.controller";
+import { WalletHistoryRepository } from "src/module/billing-module/infrastructure/repository/wallet.history.repository";
+import { WalletRepository } from "src/module/billing-module/infrastructure/repository/wallet.repository";
 
 @Module({
     imports: [],
     controllers: [AddAmountController],
-    providers: [AddAmountService, BillingRepository],
+    providers: [AddAmountService, WalletRepository, WalletHistoryRepository],
     exports: [],
 })
 export class AddAmountModule { }

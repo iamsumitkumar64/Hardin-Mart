@@ -15,12 +15,12 @@ export class OrderRepository extends Repository<OrderEntity> {
     }
 
     async createOrder(body: Partial<OrderEntity>) {
-        const user = this.create(body);
-        return await this.save(user);
+        const order = this.create(body);
+        return await this.save(order);
     }
 
     async findByUuid(uuid: string) {
-        const user = await this.findOne({
+        const order = await this.findOne({
             where: {
                 uuid: uuid
             },
@@ -28,11 +28,11 @@ export class OrderRepository extends Repository<OrderEntity> {
                 user: true,
             }
         });
-        return user;
+        return order;
     }
 
     async findByUserUuidAndOrderUuid(user_uuid: string, order_uuid: string) {
-        const user = await this.findOne({
+        const order = await this.findOne({
             where: {
                 uuid: order_uuid,
                 user_uuid: user_uuid
@@ -41,7 +41,7 @@ export class OrderRepository extends Repository<OrderEntity> {
                 user: true,
             }
         });
-        return user;
+        return order;
     }
 
     async getOrderListing(user: UserEntity, offset?: number, limit?: number) {

@@ -1,12 +1,13 @@
 import { Module } from "@nestjs/common";
-import { BillingRepository } from "src/module/billing-module/infrastructure/repository/billing.repository";
 import { GetWalletHistoryController } from "./get-wallet-history.controller";
 import { GetWalletHistoryService } from "./get-wallet-history.service";
+import { WalletHistoryRepository } from "src/module/billing-module/infrastructure/repository/wallet.history.repository";
+import { WalletRepository } from "src/module/billing-module/infrastructure/repository/wallet.repository";
 
 @Module({
     imports: [],
     controllers: [GetWalletHistoryController],
-    providers: [GetWalletHistoryService, BillingRepository],
+    providers: [GetWalletHistoryService, WalletRepository, WalletHistoryRepository],
     exports: [],
 })
 export class GetWalletHistoryModule { }

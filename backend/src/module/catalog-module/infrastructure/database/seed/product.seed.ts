@@ -10,6 +10,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'iPhone 15 Pro',
         description: 'Apple smartphone with A17 Pro chip and titanium body.',
         image_url: 'https://picsum.photos/seed/iphone15pro/640/480',
+        created_at: new Date('2025-01-01T00:00:00.000Z'),
     },
     {
         id: 2,
@@ -17,6 +18,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Samsung Galaxy S24 Ultra',
         description: 'Premium Android smartphone with 200MP camera.',
         image_url: 'https://picsum.photos/seed/s24ultra/640/480',
+        created_at: new Date('2025-01-02T00:00:00.000Z'),
     },
     {
         id: 3,
@@ -24,6 +26,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'MacBook Air M3',
         description: 'Lightweight Apple laptop powered by M3 chip.',
         image_url: 'https://picsum.photos/seed/macbookairm3/640/480',
+        created_at: new Date('2025-01-03T00:00:00.000Z'),
     },
     {
         id: 4,
@@ -31,6 +34,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Dell XPS 15',
         description: 'High-performance ultrabook with InfinityEdge display.',
         image_url: 'https://picsum.photos/seed/dellxps15/640/480',
+        created_at: new Date('2025-01-04T00:00:00.000Z'),
     },
     {
         id: 5,
@@ -38,6 +42,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Sony WH-1000XM5',
         description: 'Industry-leading noise cancelling headphones.',
         image_url: 'https://picsum.photos/seed/sonyxm5/640/480',
+        created_at: new Date('2025-01-05T00:00:00.000Z'),
     },
     {
         id: 6,
@@ -45,6 +50,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Apple AirPods Pro 2',
         description: 'Wireless earbuds with active noise cancellation.',
         image_url: 'https://picsum.photos/seed/airpodspro2/640/480',
+        created_at: new Date('2025-01-06T00:00:00.000Z'),
     },
     {
         id: 7,
@@ -52,6 +58,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'iPad Pro 12.9',
         description: 'Apple tablet with Liquid Retina XDR display.',
         image_url: 'https://picsum.photos/seed/ipadpro/640/480',
+        created_at: new Date('2025-01-07T00:00:00.000Z'),
     },
     {
         id: 8,
@@ -59,6 +66,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Samsung Galaxy Tab S9',
         description: 'Android flagship tablet with AMOLED display.',
         image_url: 'https://picsum.photos/seed/tabs9/640/480',
+        created_at: new Date('2025-01-08T00:00:00.000Z'),
     },
     {
         id: 9,
@@ -66,6 +74,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Logitech MX Master 3S',
         description: 'Advanced wireless productivity mouse.',
         image_url: 'https://picsum.photos/seed/mxmaster3s/640/480',
+        created_at: new Date('2025-01-09T00:00:00.000Z'),
     },
     {
         id: 10,
@@ -73,6 +82,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Keychron K8 Keyboard',
         description: 'Wireless mechanical keyboard for developers.',
         image_url: 'https://picsum.photos/seed/keychronk8/640/480',
+        created_at: new Date('2025-01-10T00:00:00.000Z'),
     },
     {
         id: 11,
@@ -80,6 +90,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Amazon Echo Dot 5',
         description: 'Smart speaker with Alexa voice assistant.',
         image_url: 'https://picsum.photos/seed/echodot5/640/480',
+        created_at: new Date('2025-01-11T00:00:00.000Z'),
     },
     {
         id: 12,
@@ -87,6 +98,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Google Nest Hub',
         description: 'Smart display for home automation.',
         image_url: 'https://picsum.photos/seed/nesthub/640/480',
+        created_at: new Date('2025-01-12T00:00:00.000Z'),
     },
     {
         id: 13,
@@ -94,6 +106,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Canon EOS R50',
         description: 'Mirrorless camera for creators and vloggers.',
         image_url: 'https://picsum.photos/seed/canoneosr50/640/480',
+        created_at: new Date('2025-01-13T00:00:00.000Z'),
     },
     {
         id: 14,
@@ -101,6 +114,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'GoPro HERO12',
         description: 'Action camera with 5.3K video recording.',
         image_url: 'https://picsum.photos/seed/gopro12/640/480',
+        created_at: new Date('2025-01-14T00:00:00.000Z'),
     },
     {
         id: 15,
@@ -108,6 +122,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'PlayStation 5',
         description: 'Next-gen gaming console from Sony.',
         image_url: 'https://picsum.photos/seed/ps5/640/480',
+        created_at: new Date('2025-01-15T00:00:00.000Z'),
     },
     {
         id: 16,
@@ -115,6 +130,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Xbox Series X',
         description: 'Powerful gaming console from Microsoft.',
         image_url: 'https://picsum.photos/seed/xboxseriesx/640/480',
+        created_at: new Date('2025-01-16T00:00:00.000Z'),
     },
     {
         id: 17,
@@ -122,6 +138,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Nintendo Switch OLED',
         description: 'Portable gaming console with OLED screen.',
         image_url: 'https://picsum.photos/seed/switcholed/640/480',
+        created_at: new Date('2025-01-17T00:00:00.000Z'),
     },
     {
         id: 18,
@@ -129,6 +146,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'JBL Flip 6',
         description: 'Portable waterproof Bluetooth speaker.',
         image_url: 'https://picsum.photos/seed/jblflip6/640/480',
+        created_at: new Date('2025-01-18T00:00:00.000Z'),
     },
     {
         id: 19,
@@ -136,6 +154,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Dyson V15 Detect',
         description: 'Cordless vacuum cleaner with laser detection.',
         image_url: 'https://picsum.photos/seed/dysonv15/640/480',
+        created_at: new Date('2025-01-19T00:00:00.000Z'),
     },
     {
         id: 20,
@@ -143,6 +162,7 @@ const products: Partial<ProductEntity>[] = [
         name: 'Mi Smart Band 8',
         description: 'Affordable fitness tracking smart band.',
         image_url: 'https://picsum.photos/seed/miband8/640/480',
+        created_at: new Date('2025-01-20T00:00:00.000Z'),
     },
 ];
 

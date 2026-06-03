@@ -26,6 +26,7 @@
     "next": "16.2.6",
     "next-auth": "^4.24.14",
     "notistack": "^3.0.2",
+    "razorpay": "^2.9.6",
     "react": "19.2.4",
     "react-comments-section": "^3.2.0",
     "react-dom": "19.2.4",

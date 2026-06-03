@@ -114,6 +114,8 @@ export default function Home() {
             {catalogProducts && catalogProducts.map((product: Product) => {
               const saleProduct = saleProducts ? saleProducts.find((item) => item.uuid === product.uuid) : null;
               const shipmentProduct = ShipmentProducts ? ShipmentProducts.find((item) => item.uuid === product.uuid) : null;
+              const stock = shipmentProduct?.stock ?? 0;
+              const alreadyInCart = cart?.items?.some((item) => item.product_uuid === product.uuid);
 
               return (
                 <Card
@@ -140,13 +142,13 @@ export default function Home() {
                     </Typography>
 
                     <Typography className={styles.stock}>
-                      Stock: ${shipmentProduct?.stock || 0}
+                      Stock: {stock || 0}
                     </Typography>
 
                     <Button
                       className={styles.addtocart}
                       startIcon={<ShoppingCartIcon />}
-                      disabled={cart?.items?.some((item) => item.product_uuid === product.uuid)}
+                      disabled={alreadyInCart || stock <= 0}
                       onClick={() => handleAddToCart(product)}
                     >
                       {cart?.items?.some((item) => item.product_uuid === product.uuid)

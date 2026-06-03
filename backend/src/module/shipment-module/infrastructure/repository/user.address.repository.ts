@@ -13,8 +13,8 @@ export class UserAddressRepository extends Repository<UserAddressEntity> {
     }
 
     async createAddress(body: Partial<UserAddressEntity>) {
-        const user = this.create(body);
-        return await this.save(user);
+        const address = this.create(body);
+        return await this.save(address);
     }
 
     async findByUserUuid(user_uuid: string, is_default?: boolean) {

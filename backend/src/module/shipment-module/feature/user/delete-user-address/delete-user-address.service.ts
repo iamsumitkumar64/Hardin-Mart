@@ -12,8 +12,6 @@ export class DeleteUserAddressService {
 
     async deleteUserAddress(user: UserEntity, uuid: string) {
         await this.userAddressRepository.deleteUserAddress(uuid);
-        return {
-            message: "User Address deleted successfully"
-        };
+        return;
     }
 }

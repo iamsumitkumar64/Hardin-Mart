@@ -5,6 +5,7 @@ import { ExchangeNameEnum, RoutingKeyEnum } from "src/module/common/infrastrutur
 import { OrderRepository } from "src/module/sale-module/infrastructure/repository/order.repository";
 import { OrderItemRepository } from "src/module/sale-module/infrastructure/repository/order.item.repository";
 import { OutboxRepository } from "src/module/sale-module/infrastructure/repository/outbox.repository";
+import { Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class CreateOrderService {
@@ -14,6 +15,9 @@ export class CreateOrderService {
         private readonly outboxRepository: OutboxRepository,
     ) { }
 
+    @Transactional({
+        connectionName: process.env.DB_POSTGRES_SALE_SCHEMA || 'sale_schema',
+    })
     async createOrder(user: UserEntity, body: CreateOrderDto) {
         const { items } = body;
 
@@ -27,7 +31,6 @@ export class CreateOrderService {
                 })
             )
         );
-
         order.items = orderItems;
 
         // not publish direct to mq-queue
@@ -43,7 +46,7 @@ export class CreateOrderService {
         // );
 
         // make entry of publish exchange
-        await this.outboxRepository.createOutboxntry({
+        await this.outboxRepository.createOutboxEntry({
             exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
             routing_key: RoutingKeyEnum.ORDER_CREATED,
             message_payload: {

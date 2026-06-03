@@ -153,3 +153,34 @@ export const createOrder = createAsyncThunk<
         }
     }
 );
+
+export const getRazorPayLink = createAsyncThunk<
+    any,
+    { total_price: number },
+    { state: RootState }
+>(
+    "razor/pay/link",
+    async (payload, { getState, rejectWithValue }) => {
+        try {
+            const token = getState().authReducer.token || "";
+
+            const res = await fetch(`${API_URL}/razor/pay/link`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await res.json();
+            if (!res.ok) {
+                throw new Error(result.message);
+            }
+
+            return result;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);

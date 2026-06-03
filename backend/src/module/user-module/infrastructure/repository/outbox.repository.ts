@@ -13,13 +13,13 @@ export class OutboxRepository extends Repository<OutboxEntity> {
         super(OutboxEntity, dataSource.createEntityManager());
     }
 
-    async createOutboxntry(body: Partial<OutboxEntity>) {
-        const user = this.create(body);
-        return await this.save(user);
+    async createOutboxEntry(body: Partial<OutboxEntity>) {
+        const entry = this.create(body);
+        return await this.save(entry);
     }
 
     async findTopTenPendingOutBoxEntries() {
-        const mails = await this.find({
+        const entries = await this.find({
             where: {
                 status: OutboxStatusEnum.PENDING
             },
@@ -28,7 +28,7 @@ export class OutboxRepository extends Repository<OutboxEntity> {
             },
             take: Number(process.env.page_limit) || 10
         });
-        return mails;
+        return entries;
     }
 
     async updateStatus(uuid: string, status: OutboxStatusEnum) {

@@ -14,8 +14,8 @@ export class OrderRepository extends Repository<OrderEntity> {
     }
 
     async createOrder(body: Partial<OrderEntity>) {
-        const user = this.create(body);
-        return await this.save(user);
+        const order = this.create(body);
+        return await this.save(order);
     }
 
     async findByUuid(uuid: string) {

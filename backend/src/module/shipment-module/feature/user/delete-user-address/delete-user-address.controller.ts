@@ -8,6 +8,9 @@ export class DeleteUserAddressController {
 
     @Delete("/:uuid")
     async deleteUserAddress(@Req() req: Request, @Param("uuid") uuid: string) {
-        return this.deleteUserAddressService.deleteUserAddress(req.user, uuid);
+        await this.deleteUserAddressService.deleteUserAddress(req.user, uuid);
+        return {
+            message: "User Address deleted successfully"
+        };
     }
 }

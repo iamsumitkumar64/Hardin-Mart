@@ -23,7 +23,6 @@ export class CreateUserAddressService {
 
         return {
             data: data,
-            message: "User Address created"
         }
     }
 }

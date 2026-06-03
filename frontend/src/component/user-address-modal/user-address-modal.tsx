@@ -130,11 +130,7 @@ export default function UserAddressModal({ isOpen, onClose, onSelectAddress }: A
 
                     <List className={styles.addressList}>
                         {addresses?.map((addr: Address) => (
-                            <ListItem key={addr.uuid} className={addr.isDefault ? styles.DefaultlistItem : styles.listItem}
-                                onClick={() => {
-                                    onSelectAddress(addr.uuid);
-                                    onClose();
-                                }}>
+                            <ListItem key={addr.uuid} className={addr.isDefault ? styles.DefaultlistItem : styles.listItem}>
                                 <ListItemText
                                     primary={`${addr.street}, ${addr.city}, ${addr.state}`}
                                     secondary={`${addr.postalCode}, ${addr.country} ${addr.isDefault ? "(Default)" : ""
@@ -142,6 +138,15 @@ export default function UserAddressModal({ isOpen, onClose, onSelectAddress }: A
                                 />
 
                                 <ListItemSecondaryAction className={styles.actions}>
+                                    <Button
+                                        // className={styles.deleteAddress}
+                                        onClick={() => {
+                                            onSelectAddress(addr.uuid);
+                                            onClose();
+                                        }}
+                                    >
+                                        Use Cart Address
+                                    </Button>
                                     <Button
                                         className={styles.deleteAddress}
                                         onClick={() => handleDelete(addr.uuid)}

@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { OrderRepository } from "src/module/shipment-module/infrastructure/repository/order.repository";
-import { OrderCreatedMQEventPayload } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
+import type { OrderCreatedMQEventPayload } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 import { OrderItemRepository } from "src/module/shipment-module/infrastructure/repository/order.item.repository";
+import { Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class OrderCreatedService {
@@ -10,6 +11,9 @@ export class OrderCreatedService {
         private readonly orderItemRepository: OrderItemRepository,
     ) { }
 
+    @Transactional({
+        connectionName: process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema',
+    })
     async handle(order: OrderCreatedMQEventPayload) {
         const shipmentOrder = await this.orderRepository.createOrder(
             {

@@ -21,7 +21,8 @@ import * as SaleUserRegisterHandler from 'src/module/sale-module/feature/user/us
 import * as BillingUserRepo from 'src/module/billing-module/infrastructure/repository/user.repository';
 import * as BillingInboxRepo from 'src/module/billing-module/infrastructure/repository/inbox.repository';
 import * as BillingOrderRepo from 'src/module/billing-module/infrastructure/repository/order.repository';
-import * as BillingBillingRepo from 'src/module/billing-module/infrastructure/repository/billing.repository';
+import * as BillingWalletRepo from 'src/module/billing-module/infrastructure/repository/wallet.repository';
+import * as BillingWalletHistoryRepo from 'src/module/billing-module/infrastructure/repository/wallet.history.repository';
 import * as BillingUserRegisterService from 'src/module/billing-module/feature/user/user-register/user-register.service';
 import * as BillingOrderCreatedService from 'src/module/billing-module/feature/order/order-created/order-created.handler';
 import * as BillingOrderRefundService from 'src/module/billing-module/feature/order/order-refund/order-refund.handler';
@@ -69,7 +70,8 @@ import * as ShipmentOrderPaidConsumer from 'src/module/shipment-module/infrastru
         BillingUserRepo.UserRepository,
         BillingInboxRepo.InboxRepository,
         BillingOrderRepo.OrderRepository,
-        BillingBillingRepo.BillingRepository,
+        BillingWalletRepo.WalletRepository,
+        BillingWalletHistoryRepo.WalletHistoryRepository,
         BillingUserRegisterService.UserRegisterService,
         BillingOrderCreatedService.OrderCreatedService,
         BillingOrderRefundService.OrderRefundService,

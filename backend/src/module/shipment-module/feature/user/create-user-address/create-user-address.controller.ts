@@ -9,6 +9,11 @@ export class CreateUserAddressController {
 
     @Post()
     async createUserAddress(@Req() req: Request, @Body() body: CreateUserAddressDto) {
-        return this.createUserAddressService.createUserAddress(req.user, body);
+        const { data } = await this.createUserAddressService.createUserAddress(req.user, body);
+
+        return {
+            data: data,
+            message: "User Address created"
+        }
     }
 }

@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { OrderRepository } from "src/module/shipment-module/infrastructure/repository/order.repository";
-import { OrderPaidMQEventPayload } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
+import type { OrderPaidMQEventPayload } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 import { OrderStatusEnum } from "src/module/shipment-module/domain/order/order.enum";
 import { SocketService } from "src/module/common/infrastruture/socket/socket.service";
 import { SocketEventNameEnum } from "src/module/common/infrastruture/socket/socket.enum";
 import { ProductRepository } from "src/module/shipment-module/infrastructure/repository/product.repository";
 import { OutboxRepository } from "src/module/shipment-module/infrastructure/repository/outbox.repository";
 import { ExchangeNameEnum, RoutingKeyEnum } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
+import { runOnTransactionCommit, Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class OrderPaidService {
@@ -17,6 +18,9 @@ export class OrderPaidService {
         private readonly socketService: SocketService,
     ) { }
 
+    @Transactional({
+        connectionName: process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema',
+    })
     async handle(order: OrderPaidMQEventPayload) {
         const orderData = await this.orderRepository.findByUserUuidAndOrderUuid(order.user_uuid, order.order_uuid);
         if (!orderData) {
@@ -27,14 +31,16 @@ export class OrderPaidService {
         const orderStatus = hasEnoughStock ? OrderStatusEnum.READY_TO_SHIP : OrderStatusEnum.CANCELLED;
 
         await this.orderRepository.updateOrderStatus(order.order_uuid, orderStatus);
-        await this.socketService.emitToUser(
-            order.user_uuid,
-            SocketEventNameEnum.ORDER_STATUS_CHANGED,
-            { order_uuid: order.order_uuid, order_status: orderStatus }
-        );
 
-        if (!hasEnoughStock) {
-            await this.outboxRepository.createOutboxntry({
+        if (hasEnoughStock) {
+            for (const item of orderData.items) {
+                await this.productRepository.decreaseStock(
+                    item.product_uuid,
+                    item.quantity,
+                );
+            }
+        } else {
+            await this.outboxRepository.createOutboxEntry({
                 exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
                 routing_key: RoutingKeyEnum.ORDER_REFUND,
                 message_payload: {
@@ -45,6 +51,29 @@ export class OrderPaidService {
             });
         }
 
+        runOnTransactionCommit(async () => {
+            await this.socketService.emitToUser(
+                order.user_uuid,
+                SocketEventNameEnum.ORDER_STATUS_CHANGED,
+                {
+                    order_uuid: order.order_uuid,
+                    order_status: orderStatus,
+                },
+            );
+
+            if (hasEnoughStock) {
+                for (const item of orderData.items) {
+                    await this.socketService.emitToUser(
+                        order.user_uuid,
+                        SocketEventNameEnum.PRODUCT_STOCK_DECREASE_BY_QUANTITY,
+                        {
+                            product_uuid: item.product_uuid,
+                            quantity: item.quantity,
+                        },
+                    );
+                }
+            }
+        });
         return;
     }
 

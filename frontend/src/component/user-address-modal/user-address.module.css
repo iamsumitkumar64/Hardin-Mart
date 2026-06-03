@@ -3,8 +3,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 800px;
+    width: 100%;
+    max-width: 1000px;
     background-color: white;
     border-radius: 8px;
     padding: 20px;
@@ -22,9 +22,16 @@
     right: 10;
 }
 
+.rightContainer {
+    width: 60%;
+}
+
+.leftContainer {
+    width: 40%;
+}
+
 .rightContainer,
 .leftContainer {
-    width: 50%;
     height: 50%;
 }
 
@@ -51,6 +58,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    height: 450px;
     max-height: 450px;
     overflow-y: auto;
     overflow: scroll;

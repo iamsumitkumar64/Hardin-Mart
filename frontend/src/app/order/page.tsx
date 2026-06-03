@@ -5,7 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Box, Button, Card, CardContent, CircularProgress, Container, Typography } from "@mui/material";
 import { RootState, } from "@/redux/store";
 import styles from "./order.module.css";
-import { getSaleOrders, getBillingOrders, getShipmentOrders } from "@/redux/feature/order/order-action";
+import { getSaleOrders, getBillingOrders, getShipmentOrders, getRazorPayLink } from "@/redux/feature/order/order-action";
 import { SaleOrder, OrderItem } from "@/redux/feature/order/order-type";
 import { enqueueSnackbar } from "notistack";
 import Image from "next/image";
@@ -17,6 +17,7 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
 import { payOrder } from "@/redux/feature/wallet/wallet.action";
+import Razorpay from 'razorpay';
 
 export default function OrderPage() {
     const dispatch = useAppDispatch();
@@ -50,7 +51,8 @@ export default function OrderPage() {
         OrderStatusEnum.PLACED,
         OrderStatusEnum.BILLED,
         OrderStatusEnum.READY_TO_SHIP,
-        OrderStatusEnum.CANCELLED,];
+        // OrderStatusEnum.CANCELLED,
+    ];
 
     const getActiveStep = (status: OrderStatusEnum) => {
         return orderSteps.indexOf(status);
@@ -58,10 +60,31 @@ export default function OrderPage() {
 
     const handlePay = async (order_uuid: string) => {
         try {
-            await dispatch(payOrder({ order_uuid })).unwrap();
+            const billingOrder = billingOrders ? billingOrders.find((item) => item.uuid === order_uuid) : null;
+            const razorOrder = await dispatch(getRazorPayLink({ total_price: Number(billingOrder?.total_price) })).unwrap();
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+                amount: razorOrder.amount,
+                currency: razorOrder.currency,
+                order_id: razorOrder.id, // Order ID from backend
+                handler: (response: any) => {
+                    console.log(response); // Payment details
+                    // personal webhook
+                    // Step 3: Send payment details to backend for verification
+                    verifyPayment(order_uuid);
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
         } catch (err: any) {
             enqueueSnackbar(err, { variant: "warning" });
         }
+    };
+
+    // 
+    const verifyPayment = async (order_uuid: string) => {
+        await dispatch(payOrder({ order_uuid })).unwrap();
     };
 
     return (

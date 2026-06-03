@@ -7,6 +7,7 @@ import { BcryptService } from "src/module/common/infrastruture/services/bcrypt.s
 import { JwtHelperService } from "src/module/user-module/infrastructure/services/jwt.service";
 import { ExchangeNameEnum, RoutingKeyEnum } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
 import { OutboxRepository } from "src/module/user-module/infrastructure/repository/outbox.repository";
+import { Transactional } from "typeorm-transactional";
 
 @Injectable()
 export class RegisterUserService {
@@ -18,6 +19,9 @@ export class RegisterUserService {
         private readonly outboxRepository: OutboxRepository,
     ) { }
 
+    @Transactional({
+        connectionName: process.env.DB_POSTGRES_USER_SCHEMA || 'user_schema',
+    })
     async handle(req: Request, body: RegisterUserDto) {
         //check if already exists using this email
         const isUserExists = await this.userRepository.findByEmail(body.email);
@@ -42,7 +46,7 @@ export class RegisterUserService {
         // );
 
         // make entry of publish exchange
-        await this.outboxRepository.createOutboxntry({
+        await this.outboxRepository.createOutboxEntry({
             exchange_name: ExchangeNameEnum.USER_EXCHANGE,
             routing_key: RoutingKeyEnum.USER_REGISTERED,
             message_payload: RegisteredUser,

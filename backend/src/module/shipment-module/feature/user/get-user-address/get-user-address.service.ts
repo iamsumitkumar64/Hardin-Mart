@@ -14,7 +14,6 @@ export class GetUserAddressService {
         const addresses = await this.userAddressRepository.findByUserUuid(user.uuid);
         return {
             data: addresses,
-            message: "User Address fetched successfully"
         };
     }
 }

@@ -26,20 +26,23 @@ import * as ProductProductModule from './module/catalog-module/feature/product/p
 // Sale Module
 import * as SaleCronModule from './module/sale-module/infrastructure/cron/cron.module';
 import { saleDataSource } from './module/sale-module/infrastructure/database/data-source';
-import { OrderModule } from './module/sale-module/feature/order/order.module';
+import * as SaleOrderModule from './module/sale-module/feature/order/order.module';
 import * as SaleProductModule from './module/sale-module/feature/product/product.module';
 
 // Billing Module
 import { billingDataSource } from './module/billing-module/infrastructure/database/data-source';
 import { WalletModule } from './module/billing-module/feature/wallet/wallet.module';
-import * as billingOrderModule from './module/billing-module/feature/order/order.module';
-import * as billingCronModule from './module/billing-module/infrastructure/cron/cron.module';
+import * as BillingOrderModule from './module/billing-module/feature/order/order.module';
+import * as BillingCronModule from './module/billing-module/infrastructure/cron/cron.module';
 
 // Shipment Module
 import { shipmentDataSource } from './module/shipment-module/infrastructure/database/data-source';
 import { UserAddressModule } from './module/shipment-module/feature/user/user-address.module';
 import * as ShipmentProductModule from './module/shipment-module/feature/product/product.module';
 import * as ShipmentOrderModule from './module/shipment-module/feature/order/order.module';
+import * as ShipmentCronModule from './module/shipment-module/infrastructure/cron/cron.module';
+import { createTransactionalDataSource } from './module/common/infrastruture/services/typeorm.transactional';
+import { RazorPayModule } from './module/billing-module/feature/razorpay/get.razor.pay.link.module';
 
 @Module({
   imports: [
@@ -58,56 +61,93 @@ import * as ShipmentOrderModule from './module/shipment-module/feature/order/ord
     SocketModule,
 
     //User Modules
-    TypeOrmModule.forRoot({
+    TypeOrmModule.forRootAsync({
       name: process.env.DB_POSTGRES_USER_SCHEMA || 'user_schema',
-      ...userDataSource.options,
-      retryAttempts: 10,
-      retryDelay: 5000
+      useFactory: () => ({
+        ...userDataSource.options,
+        retryAttempts: 10,
+        retryDelay: 5000,
+      }),
+      dataSourceFactory: async (options) =>
+        createTransactionalDataSource(
+          process.env.DB_POSTGRES_USER_SCHEMA || 'user_schema',
+          options,
+        ),
     }),
     UserModule,
     UserCronModule.CronModule,
 
     // Catalog Modules
-    TypeOrmModule.forRoot({
+    TypeOrmModule.forRootAsync({
       name: process.env.DB_POSTGRES_CATALOG_SCHEMA || 'catalog_schema',
-      ...catalogDataSource.options,
-      retryAttempts: 10,
-      retryDelay: 5000
+      useFactory: () => ({
+        ...catalogDataSource.options,
+        retryAttempts: 10,
+        retryDelay: 5000,
+      }),
+      dataSourceFactory: async (options) =>
+        createTransactionalDataSource(
+          process.env.DB_POSTGRES_CATALOG_SCHEMA || 'catalog_schema',
+          options,
+        ),
     }),
     ProductProductModule.ProductModule,
 
     // Sale Modules
-    TypeOrmModule.forRoot({
+    TypeOrmModule.forRootAsync({
       name: process.env.DB_POSTGRES_SALE_SCHEMA || 'sale_schema',
-      ...saleDataSource.options,
-      retryAttempts: 10,
-      retryDelay: 5000
+      useFactory: () => ({
+        ...saleDataSource.options,
+        retryAttempts: 10,
+        retryDelay: 5000,
+      }),
+      dataSourceFactory: async (options) =>
+        createTransactionalDataSource(
+          process.env.DB_POSTGRES_SALE_SCHEMA || 'sale_schema',
+          options,
+        ),
     }),
-    OrderModule,
+    SaleOrderModule.OrderModule,
     SaleCronModule.CronModule,
     SaleProductModule.ProductModule,
 
-    // billing Modules
-    TypeOrmModule.forRoot({
-      name: process.env.DB_POSTGRES_billing_SCHEMA || 'billing_schema',
-      ...billingDataSource.options,
-      retryAttempts: 10,
-      retryDelay: 5000
+    // Billing Modules
+    TypeOrmModule.forRootAsync({
+      name: process.env.DB_POSTGRES_BILLING_SCHEMA || 'billing_schema',
+      useFactory: () => ({
+        ...billingDataSource.options,
+        retryAttempts: 10,
+        retryDelay: 5000,
+      }),
+      dataSourceFactory: async (options) =>
+        createTransactionalDataSource(
+          process.env.DB_POSTGRES_BILLING_SCHEMA || 'billing_schema',
+          options,
+        ),
     }),
     WalletModule,
-    billingOrderModule.OrderModule,
-    billingCronModule.CronModule,
+    BillingOrderModule.OrderModule,
+    BillingCronModule.CronModule,
+    RazorPayModule,
 
     // shipment Modules
-    TypeOrmModule.forRoot({
+    TypeOrmModule.forRootAsync({
       name: process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema',
-      ...shipmentDataSource.options,
-      retryAttempts: 10,
-      retryDelay: 5000
+      useFactory: () => ({
+        ...shipmentDataSource.options,
+        retryAttempts: 10,
+        retryDelay: 5000,
+      }),
+      dataSourceFactory: async (options) =>
+        createTransactionalDataSource(
+          process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema',
+          options,
+        ),
     }),
     UserAddressModule,
     ShipmentProductModule.ProductModule,
     ShipmentOrderModule.OrderModule,
+    ShipmentCronModule.CronModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserRepository, JwtHelperService],

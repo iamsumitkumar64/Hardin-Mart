@@ -24,6 +24,17 @@ const productSlice = createSlice({
             state.error = null;
             state.status = "pending";
         },
+        updateProductOrder: (
+            state,
+            action: {
+                payload: { product_uuid: string; quantity: number; };
+            }
+        ) => {
+            const idx = state.ShipmentProducts.findIndex((item) => item.uuid === action.payload.product_uuid);
+            if (idx != -1) {
+                state.ShipmentProducts[idx].stock = state.ShipmentProducts[idx].stock - action.payload.quantity;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -121,5 +132,5 @@ const productSlice = createSlice({
     },
 });
 
-export const { resetProductError } = productSlice.actions;
+export const { resetProductError, updateProductOrder } = productSlice.actions;
 export default productSlice.reducer;

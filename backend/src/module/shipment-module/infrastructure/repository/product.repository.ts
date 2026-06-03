@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { DataSource, Not, Repository } from "typeorm";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { ProductEntity } from "../../domain/product/product.entity";
@@ -38,4 +38,17 @@ export class ProductRepository extends Repository<ProductEntity> {
         return product;
     }
 
+    async decreaseStock(productUuid: string, quantity: number) {
+        const product = await this.findByUuid(productUuid);
+        if (!product) {
+            throw new BadRequestException(`Product ${productUuid} not found`);
+        }
+
+        if (product.stock < quantity) {
+            throw new BadRequestException(`Not enough stock for product ${productUuid}`);
+        }
+
+        product.stock -= quantity;
+        return await this.save(product);
+    }
 }

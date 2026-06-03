@@ -240,11 +240,6 @@ export default function CartPage() {
                                 >
                                     Place Order
                                 </Button>
-
-                                <Button onClick={() => setOpenUserAddressModal(true)}>
-                                    Add address
-                                </Button>
-
                             </>
                         )}
                         <Button
@@ -256,6 +251,11 @@ export default function CartPage() {
                         </Button>
                     </>
                 )}
+                {user &&
+                    <Button onClick={() => setOpenUserAddressModal(true)}>
+                        Add address
+                    </Button>
+                }
             </Box>
 
             <UserAddressModal isOpen={openUserAddressModal} onClose={handleAddAddressClose} onSelectAddress={handlePlaceOrder} />
