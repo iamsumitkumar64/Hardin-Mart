@@ -3,6 +3,8 @@ export interface Product {
     name: string;
     description: string;
     image_url: string;
+    price?: string;
+    stock?: number;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
@@ -34,6 +36,7 @@ export interface ProductResponse<T> {
 }
 
 export interface ProductState {
+    products: Product[];
     catalogProducts: Product[];
     saleProducts: SaleProduct[];
     ShipmentProducts: ShipmentProduct[];

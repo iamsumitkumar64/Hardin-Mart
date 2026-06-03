@@ -16,7 +16,7 @@ import UserAddressModal from "@/component/user-address-modal/user-address-modal"
 export default function CartPage() {
     const dispatch = useAppDispatch();
     const { cart, loading } = useAppSelector((state: RootState) => state.cartReducer);
-    const { saleProducts, ShipmentProducts } = useAppSelector((state: RootState) => state.productReducer);
+    const { products, saleProducts, ShipmentProducts } = useAppSelector((state: RootState) => state.productReducer);
     const { user } = useAppSelector((state: RootState) => state.authReducer);
     const [openUserAddressModal, setOpenUserAddressModal] = useState(false);
 
@@ -60,11 +60,10 @@ export default function CartPage() {
 
             const payload = {
                 total_price: cart.items.reduce((total, item) => {
-                    const saleProduct = saleProducts.find(
-                        (product) => product.uuid === item.product_uuid
-                    );
+                    const product = products.find((product) => product.uuid === item.product_uuid);
+                    const saleProduct = saleProducts.find((product) => product.uuid === item.product_uuid);
                     return total + (
-                        Number(saleProduct?.price || 0) * item.quantity
+                        Number(product?.price || item.product?.price || saleProduct?.price || 0) * item.quantity
                     );
                 }, 0),
                 address_uuid,
@@ -136,8 +135,11 @@ export default function CartPage() {
             {cart && cart?.items?.length > 0 && (
                 <Box className={styles.productWrapper}>
                     {cart.items.map((item: CartItem) => {
+                        const product = products.find((product) => product.uuid === item.product_uuid);
                         const saleProduct = saleProducts.find((product) => product.uuid === item.product_uuid);
                         const shipmentProduct = ShipmentProducts ? ShipmentProducts.find((product) => product.uuid === item.product_uuid) : null;
+                        const price = product?.price || item.product?.price || saleProduct?.price || 0;
+                        const stock = product?.stock ?? item.product?.stock ?? shipmentProduct?.stock ?? 0;
 
                         return (
                             <Card key={item.product_uuid} className={styles.card}>
@@ -166,11 +168,11 @@ export default function CartPage() {
                                         </Typography>
 
                                         <Typography className={styles.price}>
-                                            Price: ₹ {Number(saleProduct?.price || 0) * item.quantity}
+                                            Price: ₹ {Number(price) * item.quantity}
                                         </Typography>
 
                                         <Typography className={styles.stock}>
-                                            Stock: ₹ {Number(shipmentProduct?.stock || 0)}
+                                            Stock: {Number(stock)}
                                         </Typography>
                                     </Box>
 
@@ -202,7 +204,7 @@ export default function CartPage() {
                                         onClick={() =>
                                             handleUpdateQuantity(item.product_uuid, item.quantity + 1)
                                         }
-                                        disabled={item.quantity >= Number(shipmentProduct?.stock || 0)}
+                                        disabled={item.quantity >= Number(stock)}
                                     >
                                         +
                                     </Button>
@@ -221,8 +223,9 @@ export default function CartPage() {
                 <Typography className={styles.summaryPrice}>
                     Total: ₹ {
                         cart?.items?.reduce((total, item) => {
+                            const product = products.find((product) => product.uuid === item.product_uuid);
                             const saleProduct = saleProducts.find((product) => product.uuid === item.product_uuid);
-                            return total + (Number(saleProduct?.price || 0) * item.quantity);
+                            return total + (Number(product?.price || item.product?.price || saleProduct?.price || 0) * item.quantity);
                         }, 0)
                     }
                 </Typography>

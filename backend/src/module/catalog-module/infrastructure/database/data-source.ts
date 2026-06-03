@@ -4,6 +4,7 @@ import 'dotenv/config';
 
 //Entities
 import { InboxEntity } from "../../domain/inbox/inbox.entity";
+import { ProductListingViewEntity } from "../../domain/product/product-listing.view.entity";
 import { ProductEntity } from "../../domain/product/product.entity";
 import { UserEntity } from "../../domain/user/user.entity";
 
@@ -15,7 +16,7 @@ const options: DataSourceOptions = {
     password: process.env.DB_POSTGRES_PASSWORD,
     database: process.env.DB_POSTGRES_DATABASE,
     entities: [
-        UserEntity, InboxEntity, ProductEntity
+        UserEntity, InboxEntity, ProductEntity, ProductListingViewEntity
     ],
     schema: process.env.DB_POSTGRES_CATALOG_SCHEMA || 'catalog_schema',
     synchronize: false,

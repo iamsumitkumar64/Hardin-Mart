@@ -5,7 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Box, Button, Card, CardContent, CardMedia, CircularProgress, Container, Typography } from "@mui/material";
 import styles from "./home.module.css";
 import { RootState } from "@/redux/store";
-import { getCatalogProducts, getSaleProducts, getShipmentProducts } from "@/redux/feature/product/product-action";
+import { getProducts } from "@/redux/feature/product/product-action";
 import { enqueueSnackbar } from "notistack";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -14,15 +14,14 @@ import { addToCart } from "@/redux/feature/cart/cart-slice";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { catalogProducts, saleProducts, ShipmentProducts, totalDocuments, loading } = useAppSelector((state: RootState) => state.productReducer);
+  const { products, totalDocuments, loading } = useAppSelector((state: RootState) => state.productReducer);
   const { cart } = useAppSelector((state: RootState) => state.cartReducer);
-  const { user } = useAppSelector((state: RootState) => state.authReducer);
   const [offset, setOffset] = useState(Number(process.env.NEXT_PUBLIC_PAGE_OFFSET) || 0);
   const limit = Number(process.env.NEXT_PUBLIC_PAGE_LIMIT) || 10;
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    if (!catalogProducts?.length) {
+    if (!products?.length) {
       fetchInitialProducts();
     }
   }, []);
@@ -31,9 +30,11 @@ export default function Home() {
     try {
       setOffset(0);
 
-      await dispatch(getCatalogProducts({ limit, offset: 0 })).unwrap();
-      await dispatch(getSaleProducts({ limit, offset: 0 })).unwrap();
-      await dispatch(getShipmentProducts({ limit, offset: 0 })).unwrap();
+      await dispatch(getProducts({ limit, offset: 0 })).unwrap();
+      // Old way: fetched product columns from three APIs and joined them in React.
+      // await dispatch(getCatalogProducts({ limit, offset: 0 })).unwrap();
+      // await dispatch(getSaleProducts({ limit, offset: 0 })).unwrap();
+      // await dispatch(getShipmentProducts({ limit, offset: 0 })).unwrap();
     } catch (err: any) {
       console.log(err);
       enqueueSnackbar(err, { variant: "warning" });
@@ -43,21 +44,23 @@ export default function Home() {
   const fetchMoreProducts = async () => {
     try {
       if (loading) return;
-      if (catalogProducts.length >= totalDocuments) return;
+      if (products.length >= totalDocuments) return;
 
       const newOffset = offset + limit;
       setOffset(newOffset);
 
-      const response = await dispatch(getCatalogProducts({ limit, offset: newOffset })).unwrap();
-      await dispatch(getSaleProducts({ limit, offset: newOffset })).unwrap();
-      await dispatch(getShipmentProducts({ limit, offset: newOffset })).unwrap();
+      const response = await dispatch(getProducts({ limit, offset: newOffset })).unwrap();
+      // Old way: fetched product columns from three APIs and joined them in React.
+      // const response = await dispatch(getCatalogProducts({ limit, offset: newOffset })).unwrap();
+      // await dispatch(getSaleProducts({ limit, offset: newOffset })).unwrap();
+      // await dispatch(getShipmentProducts({ limit, offset: newOffset })).unwrap();
 
       if (!response.data.length) {
         setHasMore(false);
         return;
       }
 
-      if (catalogProducts.length + response.data.length >= totalDocuments) {
+      if (products.length + response.data.length >= totalDocuments) {
         setHasMore(false);
       }
     } catch (err: any) {
@@ -103,7 +106,7 @@ export default function Home() {
 
       <Box id="scrollableDiv" className={styles.scrollWrapper}>
         <InfiniteScroll
-          dataLength={catalogProducts?.length || saleProducts?.length || 0}
+          dataLength={products?.length || 0}
           next={fetchMoreProducts}
           hasMore={hasMore}
           loader={<Box className={styles.loader}><CircularProgress size={30} /></Box>}
@@ -111,10 +114,8 @@ export default function Home() {
           scrollableTarget="scrollableDiv"
         >
           <Box className={styles.productWrapper}>
-            {catalogProducts && catalogProducts.map((product: Product) => {
-              const saleProduct = saleProducts ? saleProducts.find((item) => item.uuid === product.uuid) : null;
-              const shipmentProduct = ShipmentProducts ? ShipmentProducts.find((item) => item.uuid === product.uuid) : null;
-              const stock = shipmentProduct?.stock ?? 0;
+            {products && products.map((product: Product) => {
+              const stock = product.stock ?? 0;
               const alreadyInCart = cart?.items?.some((item) => item.product_uuid === product.uuid);
 
               return (
@@ -138,7 +139,7 @@ export default function Home() {
                     <Typography className={styles.description}>{product.description}</Typography>
 
                     <Typography className={styles.price}>
-                      Price: ${saleProduct?.price || 0}
+                      Price: ${product.price || 0}
                     </Typography>
 
                     <Typography className={styles.stock}>

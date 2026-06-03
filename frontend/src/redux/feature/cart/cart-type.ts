@@ -3,6 +3,8 @@ export interface CartProduct {
     name: string;
     description: string;
     image_url: string;
+    price?: string;
+    stock?: number;
 }
 
 export interface CartItem {

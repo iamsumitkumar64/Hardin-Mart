@@ -160,6 +160,7 @@ export class AppModule implements NestModule {
       .exclude(
         { path: '/user/login', method: RequestMethod.ALL },
         { path: '/user/register', method: RequestMethod.ALL },
+        { path: '/catalog/product/materialized-view', method: RequestMethod.GET },
         { path: '/*path/product', method: RequestMethod.GET },
       )
       .forRoutes('*');
