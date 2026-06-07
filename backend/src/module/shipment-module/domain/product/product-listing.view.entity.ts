@@ -1,8 +1,8 @@
 import { ViewColumn, ViewEntity } from "typeorm";
 
 @ViewEntity({
-    name: "product_listing_mv",
-    schema: process.env.DB_POSTGRES_CATALOG_SCHEMA || "catalog_schema",
+    name: process.env.DB_POSTGRES_PRODUCT_VIEW || "product_listing_mv",
+    schema: process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema',
     materialized: true,
     expression: `
         SELECT

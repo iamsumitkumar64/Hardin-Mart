@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { GetOrderListingController } from "./get-orders.controller";
-import { GetOrderListingService } from "./get-orders.service";
+import { GetOrderListingService } from "./get-orders.handler";
 import { OrderRepository } from "src/module/sale-module/infrastructure/repository/order.repository";
 
 @Module({

@@ -8,7 +8,7 @@ export class GetWalletHistoryService {
         private readonly repository: WalletHistoryRepository,
     ) { }
 
-    async getWalletHistory(user: UserEntity) {
+    async handle(user: UserEntity) {
         const history = await this.repository.findHistories(user.uuid);
 
         return {

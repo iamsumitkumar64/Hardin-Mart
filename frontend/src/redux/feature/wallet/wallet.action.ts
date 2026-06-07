@@ -16,7 +16,7 @@ export const getWallet = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/wallet`, {
+            const res = await fetch(`${API_URL}/api/v1/wallet`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export const addAmount = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/wallet/amount`, {
+            const res = await fetch(`${API_URL}/api/v1/wallet/amount`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -79,7 +79,7 @@ export const getwalletHistories = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/wallet/history`, {
+            const res = await fetch(`${API_URL}/api/v1/wallet/history`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -110,7 +110,7 @@ export const payOrder = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/wallet/order/pay`, {
+            const res = await fetch(`${API_URL}/api/v1/wallet/order/pay`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

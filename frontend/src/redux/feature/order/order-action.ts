@@ -23,7 +23,7 @@ export const getSaleOrders = createAsyncThunk<
             const token = getState().authReducer.token || "";
 
             const res = await fetch(
-                `${API_URL}/sale/order?limit=${limit}&offset=${offset}`,
+                `${API_URL}/api/v1/sale/order?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -62,7 +62,7 @@ export const getBillingOrders = createAsyncThunk<
             const token = getState().authReducer.token || "";
 
             const res = await fetch(
-                `${API_URL}/billing/order?limit=${limit}&offset=${offset}`,
+                `${API_URL}/api/v1/billing/order?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -101,7 +101,7 @@ export const getShipmentOrders = createAsyncThunk<
             const token = getState().authReducer.token || "";
 
             const res = await fetch(
-                `${API_URL}/shipment/order?limit=${limit}&offset=${offset}`,
+                `${API_URL}/api/v1/shipment/order?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -133,7 +133,7 @@ export const createOrder = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/sale/order`, {
+            const res = await fetch(`${API_URL}/api/v1/sale/order`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -156,7 +156,7 @@ export const createOrder = createAsyncThunk<
 
 export const getRazorPayLink = createAsyncThunk<
     any,
-    { total_price: number },
+    { total_price: number, order_uuid: string },
     { state: RootState }
 >(
     "razor/pay/link",
@@ -164,7 +164,7 @@ export const getRazorPayLink = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/razor/pay/link`, {
+            const res = await fetch(`${API_URL}/api/v1/razor/pay/link`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

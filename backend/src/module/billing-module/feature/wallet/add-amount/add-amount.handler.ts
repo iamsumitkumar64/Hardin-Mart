@@ -12,7 +12,7 @@ export class AddAmountService {
         private readonly walletHistoryRepository: WalletHistoryRepository,
     ) { }
 
-    async addAmount(user: UserEntity, body: AddAmountWalletDto) {
+    async handle(user: UserEntity, body: AddAmountWalletDto) {
         const { amount } = body;
 
         if (!amount || amount <= 0) {

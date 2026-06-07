@@ -15,6 +15,13 @@ body {
   background-color: #faf7f7;
 }
 
+.birdAnimation {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 8%;
+}
+
 .MuiButtonBase-root {
   text-transform: none;
 }

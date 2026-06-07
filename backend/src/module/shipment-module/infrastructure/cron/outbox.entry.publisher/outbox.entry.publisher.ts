@@ -15,8 +15,8 @@ export class OutboxEntryPublisherCronService {
 
     @Cron(process.env.SHIPMENT_OUTBOX_CRON_TIMER || CronExpression.EVERY_10_SECONDS)
     async handleCron() {
-        // fecth top 10 pending enteries
-        const pendingEntries = await this.outboxRepository.findTopTenPendingOutBoxEntries();
+        // fecth top pending enteries
+        const pendingEntries = await this.outboxRepository.findTopPendingOutBoxEntries();
         if (!pendingEntries.length) { return; }
 
         await Promise.all(

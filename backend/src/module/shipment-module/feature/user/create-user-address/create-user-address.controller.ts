@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Req } from "@nestjs/common";
 import type { Request } from "express";
-import { CreateUserAddressService } from "./create-user-address.service";
+import { CreateUserAddressService } from "./create-user-address.handler";
 import { CreateUserAddressDto } from "./create-user-address.dto";
 
 @Controller('/address')
@@ -9,7 +9,7 @@ export class CreateUserAddressController {
 
     @Post()
     async createUserAddress(@Req() req: Request, @Body() body: CreateUserAddressDto) {
-        const { data } = await this.createUserAddressService.createUserAddress(req.user, body);
+        const { data } = await this.createUserAddressService.handle(req.user, body);
 
         return {
             data: data,

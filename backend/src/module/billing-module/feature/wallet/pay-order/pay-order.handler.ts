@@ -26,18 +26,18 @@ export class PayOrderService {
     @Transactional({
         connectionName: process.env.DB_POSTGRES_BILLING_SCHEMA || "billing_schema",
     })
-    async payOrder(user: UserEntity, body: PayOrderDto,) {
+    async handle(user_uuid: string, body: PayOrderDto,) {
         const { order_uuid } = body;
 
         try {
             // fetch/create wallet
-            const wallet = await this.walletRepository.upsertWallet(user.uuid);
+            const wallet = await this.walletRepository.upsertWallet(user_uuid);
             // if (!wallet) {
-            //     wallet = await this.walletRepository.createWallet({ user_uuid: user.uuid, balance: 0 });
+            //     wallet = await this.walletRepository.createWallet({ user_uuid: user_uuid, balance: 0 });
             // }
 
             // check order
-            const order = await this.orderRepository.findByUserUuidAndOrderUuid(user.uuid, order_uuid,);
+            const order = await this.orderRepository.findByUserUuidAndOrderUuid(user_uuid, order_uuid,);
             if (!order) {
                 throw new BadRequestException("Order not found",);
             }
@@ -67,7 +67,7 @@ export class PayOrderService {
 
             // create history
             await this.walletHistoryRepository.createHistory({
-                user_uuid: user.uuid,
+                user_uuid: user_uuid,
                 order_uuid,
                 amount: order.total_price,
                 type: WalletHistoryTypeEnum.DEBIT,
@@ -80,13 +80,13 @@ export class PayOrderService {
                 routing_key: RoutingKeyEnum.ORDER_PAID,
                 message_payload: {
                     order_uuid,
-                    user_uuid: user.uuid,
+                    user_uuid: user_uuid,
                 },
             });
 
             runOnTransactionCommit(async () => {
                 await this.socketService.emitToUser(
-                    user.uuid,
+                    user_uuid,
                     SocketEventNameEnum.ORDER__PAYMENT_STATUS_CHANGED,
                     {
                         order_uuid,
@@ -95,7 +95,7 @@ export class PayOrderService {
                 );
 
                 await this.socketService.emitToUser(
-                    user.uuid,
+                    user_uuid,
                     SocketEventNameEnum.ORDER_STATUS_CHANGED,
                     {
                         order_uuid,
@@ -112,12 +112,11 @@ export class PayOrderService {
             );
 
             await this.socketService.emitToUser(
-                user.uuid,
+                user_uuid,
                 SocketEventNameEnum.ORDER__PAYMENT_STATUS_CHANGED,
                 {
                     order_uuid,
-                    payment_status:
-                        OrderPaymentStatusEnum.FAILED,
+                    payment_status: OrderPaymentStatusEnum.FAILED,
                 },
             );
 

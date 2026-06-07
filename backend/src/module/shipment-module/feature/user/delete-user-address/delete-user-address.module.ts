@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { UserRepository } from "src/module/user-module/infrastructure/repository/user.repository";
 import { DeleteUserAddressController } from "./delete-user-address.controller";
-import { DeleteUserAddressService } from "./delete-user-address.service";
+import { DeleteUserAddressService } from "./delete-user-address.handler";
 import { UserAddressRepository } from "src/module/shipment-module/infrastructure/repository/user.address.repository";
 
 @Module({

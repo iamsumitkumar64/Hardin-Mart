@@ -1,0 +1,143 @@
+asyncapi: 2.6.0
+info:
+  title: Order Processing
+  version: 1.0.0
+servers:
+  rabbitmq:
+    url: amqp://rabbitmq
+    protocol: amqp
+channels:
+  sales.order_placed:
+    publish:
+      summary: Order placed event
+      message:
+        $ref: '#/components/messages/OrderPlaced'
+  billing.order_billed:
+    publish:
+      summary: Order billed event
+      message:
+        $ref: '#/components/messages/OrderBilled'
+  billing.payment_failed:
+    publish:
+      summary: Payment failed event
+      message:
+        $ref: '#/components/messages/PaymentFailed'
+  billing.order_refunded:
+    publish:
+      summary: Order refunded event
+      message:
+        $ref: '#/components/messages/OrderRefunded'
+  shipping.shipping_label_created:
+    publish:
+      summary: Shipping label created event
+      message:
+        $ref: '#/components/messages/ShippingLabelCreated'
+  shipping.back_ordered:
+    publish:
+      summary: Back ordered event
+      message:
+        $ref: '#/components/messages/BackOrdered'
+components:
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          message_id:
+            type: string
+            example: 8c76601b-9921-4167-821c-eb7eefd4d041
+          type:
+            type: string
+            description: Message type (event name)
+            example: event_type
+          app_id:
+            type: string
+            example: app-name
+          content_type:
+            type: string
+            example: application/json
+  messages:
+    OrderPlaced:
+      name: OrderPlaced
+      title: Order Placed
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        type: object
+        properties:
+          order_id:
+            type: string
+            format: uuid
+          products:
+            type: array
+            items:
+              type: object
+              properties:
+                product_id:
+                  type: string
+                  format: uuid
+                quantity:
+                  type: integer
+                  example: 3
+          customer_id:
+            type: string
+            format: uuid
+          order_total:
+            type: number
+            format: float
+            example: 369.99
+    OrderBilled:
+      name: OrderBilled
+      title: Order Billed
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        type: object
+        properties:
+          order_id:
+            type: string
+            format: uuid
+    PaymentFailed:
+      name: PaymentFailed
+      title: Payment Failed
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        type: object
+        properties:
+          order_id:
+            type: string
+            format: uuid
+    OrderRefunded:
+      name: OrderRefunded
+      title: Order Refunded
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        type: object
+        properties:
+          order_id:
+            type: string
+            format: uuid
+    ShippingLabelCreated:
+      name: ShippingLabelCreated
+      title: Shipping Label Created
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        type: object
+        properties:
+          order_id:
+            type: string
+            format: uuid
+    BackOrdered:
+      name: BackOrdered
+      title: Back Ordered
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        type: object
+        properties:
+          order_id:
+            type: string
+            format: uuid

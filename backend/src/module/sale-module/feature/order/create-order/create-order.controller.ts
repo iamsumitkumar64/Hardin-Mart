@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
 import type { Request } from "express";
 import { CreateOrderDto } from "./create-order.dto";
-import { CreateOrderService } from "./create-order.service";
+import { CreateOrderService } from "./create-order.handler";
 
 @Controller()
 export class CreateOrderController {
@@ -9,7 +9,7 @@ export class CreateOrderController {
 
     @Post()
     async createOrder(@Req() req: Request, @Body() body: CreateOrderDto) {
-        const { data } = await this.createOrderService.createOrder(req.user, body);
+        const { data } = await this.createOrderService.handle(req.user, body);
 
         return {
             data: data,

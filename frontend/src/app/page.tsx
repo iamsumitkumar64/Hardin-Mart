@@ -5,7 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Box, Button, Card, CardContent, CardMedia, CircularProgress, Container, Typography } from "@mui/material";
 import styles from "./home.module.css";
 import { RootState } from "@/redux/store";
-import { getProducts } from "@/redux/feature/product/product-action";
+import { getCatalogProducts, getProducts, getSaleProducts, getShipmentProducts } from "@/redux/feature/product/product-action";
 import { enqueueSnackbar } from "notistack";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -14,8 +14,9 @@ import { addToCart } from "@/redux/feature/cart/cart-slice";
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { products, totalDocuments, loading } = useAppSelector((state: RootState) => state.productReducer);
+  const { products, catalogProducts, saleProducts, ShipmentProducts, totalDocuments, loading } = useAppSelector((state: RootState) => state.productReducer);
   const { cart } = useAppSelector((state: RootState) => state.cartReducer);
+  const { user } = useAppSelector((state: RootState) => state.authReducer);
   const [offset, setOffset] = useState(Number(process.env.NEXT_PUBLIC_PAGE_OFFSET) || 0);
   const limit = Number(process.env.NEXT_PUBLIC_PAGE_LIMIT) || 10;
   const [hasMore, setHasMore] = useState(true);
@@ -31,7 +32,6 @@ export default function Home() {
       setOffset(0);
 
       await dispatch(getProducts({ limit, offset: 0 })).unwrap();
-      // Old way: fetched product columns from three APIs and joined them in React.
       // await dispatch(getCatalogProducts({ limit, offset: 0 })).unwrap();
       // await dispatch(getSaleProducts({ limit, offset: 0 })).unwrap();
       // await dispatch(getShipmentProducts({ limit, offset: 0 })).unwrap();
@@ -50,7 +50,6 @@ export default function Home() {
       setOffset(newOffset);
 
       const response = await dispatch(getProducts({ limit, offset: newOffset })).unwrap();
-      // Old way: fetched product columns from three APIs and joined them in React.
       // const response = await dispatch(getCatalogProducts({ limit, offset: newOffset })).unwrap();
       // await dispatch(getSaleProducts({ limit, offset: newOffset })).unwrap();
       // await dispatch(getShipmentProducts({ limit, offset: newOffset })).unwrap();

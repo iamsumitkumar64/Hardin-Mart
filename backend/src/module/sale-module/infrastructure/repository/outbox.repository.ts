@@ -18,13 +18,13 @@ export class OutboxRepository extends Repository<OutboxEntity> {
         return await this.save(entry);
     }
 
-    async findTopTenPendingOutBoxEntries() {
+    async findTopPendingOutBoxEntries() {
         const entries = await this.find({
             where: {
                 status: OutboxStatusEnum.PENDING
             },
             order: {
-                created_at: "DESC",
+                created_at: "ASC",
             },
             take: Number(process.env.page_limit) || 10
         });

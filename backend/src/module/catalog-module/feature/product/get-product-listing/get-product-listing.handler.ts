@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { ProductRepository } from "src/module/catalog-module/infrastructure/repository/product.repository";
 
 @Injectable()
@@ -9,12 +9,6 @@ export class GetProductListingService {
 
     async handle(offset?: number, limit?: number) {
         const result = await this.repository.getProductListing(offset, limit);
-
-        return { ...result };
-    }
-
-    async handleMaterializedView(offset?: number, limit?: number) {
-        const result = await this.repository.getProductListingFromMaterializedView(offset, limit);
 
         return { ...result };
     }

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
 import type { Request } from "express";
-import { AddAmountService } from "./add-amount.service";
+import { AddAmountService } from "./add-amount.handler";
 
 @Controller()
 export class AddAmountController {
@@ -8,7 +8,7 @@ export class AddAmountController {
 
     @Post("/amount")
     async addAmount(@Req() req: Request) {
-        await this.addAmountService.addAmount(req.user, req.body);
+        await this.addAmountService.handle(req.user, req.body);
 
         return {
             message: "Amount added successfully"

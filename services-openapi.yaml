@@ -1,0 +1,365 @@
+
+openapi: 3.0.3
+info:
+  title: Sample API
+  version: 1.0.0
+paths:
+  /api/v1/products-catalog/products:
+    get:
+      tags:
+        - Products Catalog
+      summary: Retrieve a list of products
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                      example: "Wireless Headphones"
+                    description:
+                      type: string
+                      example: "Over-ear Bluetooth headphones with noise cancellation"
+                    product_url:
+                      type: string
+                      example: "https://images/923brt8v0qe90"
+
+  /api/v1/sales/products:
+    get:
+      tags:
+        - Sales
+      summary: Retrieve a list of products with pricing
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: products_id
+          in: query
+          description: List of product IDs to filter
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: string
+                      format: uuid
+                    price:
+                      type: number
+
+  /api/v1/sales/orders:
+    post:
+      tags:
+        - Sales
+      summary: Create an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - order_id
+                - products
+                - customer_id
+              properties:
+                order_id:
+                  type: string
+                  format: uuid
+                products:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - product_id
+                      - quantity
+                    properties:
+                      product_id: 
+                        type: string
+                        format: uuid
+                        example: "f23c5fa4-eadf-405a-9da7-b01371d2080c"
+                      quantity:
+                        type: number
+                        example: 3
+                    
+                customer_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Order created
+
+    get:
+      tags:
+        - Sales
+      summary: Retrieve a list of orders
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: status
+          in: query
+          description: order status
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - PENDING
+                - PLACED
+                - PAYMENT_FAILED
+                - BILLED
+                - READY_TO_SHIP
+                - CANCELED
+      responses:
+        '200':
+          description: A list of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    order_id:
+                      type: string
+                      format: uuid
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - product_id
+                          - quantity
+                        properties:
+                          product_id: 
+                            type: string
+                            format: uuid
+                            example: "f23c5fa4-eadf-405a-9da7-b01371d2080c"
+                          quantity:
+                            type: number
+                            example: 3
+                    customer_id:
+                      type: string
+                      format: uuid
+                    order_total:
+                      type: number
+                      example: 90.00
+                    status:
+                      type: string
+                      enum:
+                        - PENDING
+                        - PLACED
+                        - PAYMENT_FAILED
+                        - BILLED
+                        - READY_TO_SHIP
+                        - CANCELED
+                        
+  /api/v1/sales/orders/{id}/place:
+    patch:
+      tags:
+        - Sales
+      summary: Place an order
+      parameters:
+        - name: id
+          in: path
+          description: Order ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order placed
+
+  /api/v1/billing/accounts:
+    get:
+      tags:
+        - Billing
+      summary: Retrieve a list of billing accounts
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: A list of billing accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    billing_account_id:
+                      type: string
+                      format: uuid
+                    card_number:
+                      type: string
+                    availableBalance:
+                      type: number
+
+  /api/v1/billing/orders:
+    post:
+      tags:
+        - Billing
+      summary: Create a billing order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - order_id
+                - billing_account_id
+                - billing_address
+              properties:
+                order_id:
+                  type: string
+                  format: uuid
+                billing_account_id:
+                  type: string
+                  format: uuid
+                billing_address:
+                  type: string
+      responses:
+        '201':
+          description: Billing order created
+
+  /api/v1/shipping/products:
+    get:
+      tags:
+        - Shipping
+      summary: Retrieve a list of products with stock information
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: products_id
+          in: query
+          description: List of product IDs to filter
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: string
+                      format: uuid
+                    quantityOnHand:
+                      type: number
+
+  /api/v1/shipping/orders:
+    post:
+      tags:
+        - Shipping
+      summary: Create a shipping order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - order_id
+                - shipping_address
+              properties:
+                order_id:
+                  type: string
+                  format: uuid
+                shipping_address:
+                  type: string
+      responses:
+        '201':
+          description: Shipping order created

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
 import type { Request } from "express";
-import { GetWalletHistoryService } from "./get-wallet-history.service";
+import { GetWalletHistoryService } from "./get-wallet-history.handler";
 
 @Controller()
 export class GetWalletHistoryController {
@@ -8,7 +8,7 @@ export class GetWalletHistoryController {
 
     @Get("/history")
     async getWalletHistory(@Req() req: Request) {
-        const { data } = await this.GetWalletHistoryService.getWalletHistory(req.user);
+        const { data } = await this.GetWalletHistoryService.handle(req.user);
 
         return {
             data: data,

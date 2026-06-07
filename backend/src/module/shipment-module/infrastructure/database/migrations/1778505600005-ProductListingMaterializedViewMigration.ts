@@ -1,15 +1,21 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class ProductListingMaterializedViewMigration1778505600002 implements MigrationInterface {
-    name = "ProductListingMaterializedViewMigration1778505600002";
+export class ProductListingMaterializedViewMigration177850560005 implements MigrationInterface {
+    name = "ProductListingMaterializedViewMigration1778505600005";
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const catalogSchema = this.quoteIdentifier(process.env.DB_POSTGRES_CATALOG_SCHEMA || "catalog_schema");
-        const saleSchema = this.quoteIdentifier(process.env.DB_POSTGRES_SALE_SCHEMA || "sale_schema");
-        const shipmentSchema = this.quoteIdentifier(process.env.DB_POSTGRES_SHIPMENT_SCHEMA || "shipment_schema");
-        const catalogProductTable = this.escapeLiteral(`${catalogSchema}."product"`);
-        const saleProductTable = this.escapeLiteral(`${saleSchema}."product"`);
-        const shipmentProductTable = this.escapeLiteral(`${shipmentSchema}."product"`);
+        // schemas
+        const catalogSchema = (process.env.DB_POSTGRES_CATALOG_SCHEMA || "catalog_schema");
+        const saleSchema = (process.env.DB_POSTGRES_SALE_SCHEMA || "sale_schema");
+        const shipmentSchema = (process.env.DB_POSTGRES_SHIPMENT_SCHEMA || "shipment_schema");
+
+        // tables
+        const catalogProductTable = (`${catalogSchema}."product"`);
+        const saleProductTable = (`${saleSchema}."product"`);
+        const shipmentProductTable = (`${shipmentSchema}."product"`);
+
+        // view
+        const productView = process.env.DB_POSTGRES_PRODUCT_VIEW || "product_listing_mv";
 
         await queryRunner.query(`
             DO $$
@@ -19,7 +25,7 @@ export class ProductListingMaterializedViewMigration1778505600002 implements Mig
                     AND to_regclass('${shipmentProductTable}') IS NOT NULL
                 THEN
                     EXECUTE '
-                        CREATE MATERIALIZED VIEW IF NOT EXISTS ${catalogSchema}."product_listing_mv" AS
+                        CREATE MATERIALIZED VIEW IF NOT EXISTS ${shipmentSchema}.${productView} AS
                         SELECT
                             catalog_product.uuid,
                             catalog_product.name,
@@ -42,7 +48,7 @@ export class ProductListingMaterializedViewMigration1778505600002 implements Mig
 
                     EXECUTE '
                         CREATE UNIQUE INDEX IF NOT EXISTS "IDX_product_listing_mv_uuid"
-                        ON ${catalogSchema}."product_listing_mv" ("uuid")
+                        ON ${shipmentSchema}.${productView} ("uuid")
                     ';
                 END IF;
             END $$;
@@ -50,16 +56,12 @@ export class ProductListingMaterializedViewMigration1778505600002 implements Mig
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        const catalogSchema = this.quoteIdentifier(process.env.DB_POSTGRES_CATALOG_SCHEMA || "catalog_schema");
+        // schemas
+        const shipmentSchema = process.env.DB_POSTGRES_SHIPMENT_SCHEMA || "shipment_schema";
 
-        await queryRunner.query(`DROP MATERIALIZED VIEW IF EXISTS ${catalogSchema}."product_listing_mv"`);
-    }
+        // view
+        const productView = process.env.DB_POSTGRES_PRODUCT_VIEW || "product_listing_mv";
 
-    private quoteIdentifier(identifier: string) {
-        return `"${identifier.replace(/"/g, '""')}"`;
-    }
-
-    private escapeLiteral(value: string) {
-        return value.replace(/'/g, "''");
+        await queryRunner.query(`DROP MATERIALIZED VIEW IF EXISTS ${shipmentSchema}.${productView}`);
     }
 }

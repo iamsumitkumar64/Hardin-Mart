@@ -1,6 +1,6 @@
 "use client"
 import { SocketEventNameEnum } from "@/enum/socket.enum";
-import { updateBillingOrderStatus, updateShipmentOrderStatus } from "@/redux/feature/order/order-slice";
+import { newBillingOrder, updateBillingOrderStatus, updateShipmentOrderStatus } from "@/redux/feature/order/order-slice";
 import { updateProductOrder } from "@/redux/feature/product/product-slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
 import { RootState } from "@/redux/store";
@@ -32,6 +32,11 @@ export default function RootSocketListener() {
                 enqueueSnackbar(`Product stock decrease by ${message.quantity}`, { variant: "info" });
                 console.log(message);
                 dispatch(updateProductOrder(message));
+            });
+
+            socket.on(SocketEventNameEnum.BILLING_ORDER_CREATED, (message) => {
+                console.log(message);
+                dispatch(newBillingOrder(message));
             });
 
             return () => {

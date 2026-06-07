@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { GetWalletHistoryController } from "./get-wallet-history.controller";
-import { GetWalletHistoryService } from "./get-wallet-history.service";
+import { GetWalletHistoryService } from "./get-wallet-history.handler";
 import { WalletHistoryRepository } from "src/module/billing-module/infrastructure/repository/wallet.history.repository";
 import { WalletRepository } from "src/module/billing-module/infrastructure/repository/wallet.repository";
 

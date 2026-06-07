@@ -12,7 +12,7 @@ export const signupUser = createAsyncThunk(
         try {
             const { confirmPassword, ...payload } = data
 
-            const res = await fetch(`${API_URL}/user/register`, {
+            const res = await fetch(`${API_URL}/api/v1/user/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -39,7 +39,7 @@ export const loginUser = createAsyncThunk(
         { rejectWithValue }
     ) => {
         try {
-            const res = await fetch(`${API_URL}/user/login`, {
+            const res = await fetch(`${API_URL}/api/v1/user/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

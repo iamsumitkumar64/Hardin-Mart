@@ -8,7 +8,7 @@ export class GetOrderListingService {
         private readonly repository: OrderRepository,
     ) { }
 
-    async getOrderListing(user: UserEntity, offset?: number, limit?: number) {
+    async handle(user: UserEntity, offset?: number, limit?: number) {
         const { data, total } = await this.repository.getOrderListing(user, offset, limit);
 
         return {

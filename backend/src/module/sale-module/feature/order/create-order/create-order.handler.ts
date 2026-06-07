@@ -18,7 +18,7 @@ export class CreateOrderService {
     @Transactional({
         connectionName: process.env.DB_POSTGRES_SALE_SCHEMA || 'sale_schema',
     })
-    async createOrder(user: UserEntity, body: CreateOrderDto) {
+    async handle(user: UserEntity, body: CreateOrderDto) {
         const { items } = body;
 
         const order = await this.orderRepository.createOrder({ user_uuid: user.uuid, });

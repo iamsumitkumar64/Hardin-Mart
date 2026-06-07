@@ -130,6 +130,15 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
             ExchangeTypeEnum.DIRECT,
         );
         await this.setupRetryQueue(QueueEnum.BILLING_ORDER_REFUND_QUEUE);
+
+        // billing order created now pay queue
+        await this.setupExchangeQueueAndBind(
+            QueueEnum.BILLING_ORDER_CREATED_PAY_QUEUE,
+            ExchangeNameEnum.ORDER_EXCHANGE,
+            RoutingKeyEnum.BILLING_ORDER_CREATED,
+            ExchangeTypeEnum.DIRECT,
+        );
+        await this.setupRetryQueue(QueueEnum.BILLING_ORDER_CREATED_PAY_QUEUE);
     }
 
     private async setupRetryQueue(originalQueue: string, retryDelay = Number(process.env.RETRYDELAY) || 15000) {

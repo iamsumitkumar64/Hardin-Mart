@@ -26,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <RootSocketListener />
                 <HeaderComp />
                 {children}
+                <Image src={'/bird_animation.gif'} alt="bird animation" width={300} height={200} className="birdAnimation" />
               </SnackbarProvider>
             </PersistGate>
           </Provider>

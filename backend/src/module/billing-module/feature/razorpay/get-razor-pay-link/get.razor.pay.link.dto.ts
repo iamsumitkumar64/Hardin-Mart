@@ -4,4 +4,7 @@ export class GetrazorPayLinkDto {
     @IsNumber()
     @Min(1)
     total_price: number;
+
+    @IsUUID()
+    order_uuid: string;
 }

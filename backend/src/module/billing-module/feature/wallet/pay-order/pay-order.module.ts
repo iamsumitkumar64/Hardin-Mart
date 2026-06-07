@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { PayOrderController } from "./pay-order.controller";
-import { PayOrderService } from "./pay-order.service";
+import { PayOrderService } from "./pay-order.handler";
 import { OrderRepository } from "src/module/billing-module/infrastructure/repository/order.repository";
 import { OutboxRepository } from "src/module/billing-module/infrastructure/repository/outbox.repository";
 import { WalletRepository } from "src/module/billing-module/infrastructure/repository/wallet.repository";

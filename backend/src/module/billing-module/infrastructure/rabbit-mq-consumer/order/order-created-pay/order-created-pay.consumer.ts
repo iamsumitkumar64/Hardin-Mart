@@ -1,27 +1,27 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { RabbitMQService } from 'src/module/common/infrastruture/rabbit-mq/rabbit-mq.service';
 import { ExchangeNameEnum, ExchangeTypeEnum, QueueEnum, RoutingKeyEnum } from 'src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum';
-import { RabbitMQConsumerMessage, UserRegisteredMQEventPayload } from 'src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type';
+import { RabbitMQConsumerMessage, BillingOrderCreatedPayMQEventPayload } from 'src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type';
 import { InboxRepository } from '../../../repository/inbox.repository';
-import { UserRegisterService } from 'src/module/billing-module/feature/user/user-register/user-register.handler';
+import { PayOrderService } from 'src/module/billing-module/feature/wallet/pay-order/pay-order.handler';
 
 @Injectable()
-export class UserRegisteredConsumer implements OnModuleInit {
-    private readonly logger = new Logger(UserRegisteredConsumer.name);
+export class OrderCreatedPayConsumer implements OnModuleInit {
+    private readonly logger = new Logger(OrderCreatedPayConsumer.name);
 
     constructor(
         private readonly rabbitMQService: RabbitMQService,
-        private readonly userRegisterService: UserRegisterService,
         private readonly inboxRepository: InboxRepository,
+        private readonly payOrderService: PayOrderService,
     ) { }
 
     async onModuleInit() {
-        await this.rabbitMQService.consumeMessages<RabbitMQConsumerMessage<UserRegisteredMQEventPayload>>(
-            QueueEnum.BILLING_USER_REGISTERED_QUEUE,
+        await this.rabbitMQService.consumeMessages<RabbitMQConsumerMessage<BillingOrderCreatedPayMQEventPayload>>(
+            QueueEnum.BILLING_ORDER_CREATED_PAY_QUEUE,
             async (data) => {
                 const { outbox_uuid, payload } = data;
 
-                this.logger.log(`Processing registered user: ${payload.email} \n ${JSON.stringify(payload)}`);
+                this.logger.log(`Processing order paying: ${payload.order_uuid} \n ${JSON.stringify(payload)}`);
 
                 const alreadyProcessed = await this.inboxRepository.findByOutboxUuid(outbox_uuid);
                 if (alreadyProcessed) {
@@ -29,7 +29,7 @@ export class UserRegisteredConsumer implements OnModuleInit {
                     return;
                 }
 
-                await this.userRegisterService.handle(payload);
+                await this.payOrderService.handle(payload.user_uuid, { order_uuid: payload.order_uuid });
 
                 await this.inboxRepository.createEntry({ outbox_uuid });
             },

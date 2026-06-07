@@ -14,7 +14,7 @@ export const getProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/catalog/product/materialized-view?limit=${limit}&offset=${offset}`,
+                `${API_URL}/api/v1/shipment/product/materialized-view?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -46,7 +46,7 @@ export const getCatalogProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/catalog/product?limit=${limit}&offset=${offset}`,
+                `${API_URL}/api/v1/catalog/product?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -78,7 +78,7 @@ export const getSaleProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/sale/product?limit=${limit}&offset=${offset}`,
+                `${API_URL}/api/v1/sale/product?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -110,7 +110,7 @@ export const getShipmentProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/shipment/product?limit=${limit}&offset=${offset}`,
+                `${API_URL}/api/v1/shipment/product?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {

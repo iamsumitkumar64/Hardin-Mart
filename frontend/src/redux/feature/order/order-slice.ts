@@ -1,7 +1,7 @@
 "use client";
 
 import { createSlice } from "@reduxjs/toolkit";
-import { BillingOrder, SaleOrder, OrderState, ShipmentOrder } from "./order-type";
+import { BillingOrder, SaleOrder, OrderState, ShipmentOrder, OrderResponse } from "./order-type";
 import { createOrder, getBillingOrders, getSaleOrders, getShipmentOrders } from "./order-action";
 import { OrderPaymentStatusEnum, OrderStatusEnum } from "@/enum/order.enum";
 
@@ -50,6 +50,15 @@ const orderSlice = createSlice({
             if (order) {
                 order.order_status = action.payload.order_status;
             }
+        },
+        newBillingOrder: (
+            state,
+            action: {
+                payload: { order: BillingOrder };
+            }
+        ) => {
+            const newOrder = action.payload.order as BillingOrder;
+            state.billingOrders.unshift(newOrder);
         },
     },
     extraReducers: (builder) => {
@@ -172,5 +181,5 @@ const orderSlice = createSlice({
     },
 });
 
-export const { resetOrderError, clearOrderState, updateBillingOrderStatus, updateShipmentOrderStatus } = orderSlice.actions;
+export const { resetOrderError, clearOrderState, updateBillingOrderStatus, updateShipmentOrderStatus, newBillingOrder } = orderSlice.actions;
 export default orderSlice.reducer;
