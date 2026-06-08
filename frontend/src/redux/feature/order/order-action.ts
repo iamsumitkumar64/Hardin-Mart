@@ -172,8 +172,8 @@ export const createOrder = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/api/v1/sale/order`, {
-                method: "POST",
+            const res = await fetch(`${API_URL}/api/v1/sale/order/place`, {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
