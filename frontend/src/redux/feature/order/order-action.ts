@@ -123,6 +123,45 @@ export const getShipmentOrders = createAsyncThunk<
     }
 );
 
+export const getShipmentOrdersMaterialized = createAsyncThunk<
+    OrderResponse,
+    { limit?: number; offset?: number },
+    { state: RootState }
+>(
+    "shipmentOrder/materialized-list",
+    async (
+        {
+            limit = Number(process.env.NEXT_PUBLIC_PAGE_LIMIT) || 10,
+            offset = Number(process.env.NEXT_PUBLIC_PAGE_OFFSET) || 0,
+        },
+        { getState, rejectWithValue }
+    ) => {
+        try {
+            const token = getState().authReducer.token || "";
+
+            const res = await fetch(
+                `${API_URL}/api/v1/shipment/order/materialized-view?limit=${limit}&offset=${offset}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: token,
+                    },
+                }
+            );
+
+            const result = await res.json();
+            if (!res.ok) {
+                throw new Error(result.message);
+            }
+
+            return result;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 export const createOrder = createAsyncThunk<
     OrderResponse,
     CreateOrderPayload,

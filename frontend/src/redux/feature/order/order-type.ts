@@ -58,6 +58,21 @@ export interface ShipmentOrder {
     deleted_at: string | null;
 }
 
+export interface MaterializedOrder {
+    uuid: string;
+    user_uuid: string;
+    total_price?: string | number;
+    address_uuid?: string | null;
+    order_status: OrderStatusEnum;
+    payment_status?: OrderPaymentStatusEnum;
+    items?: OrderItem[];
+    address?: Address | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    id?: string;
+}
+
 export interface OrderResponse {
     data: SaleOrder[] | BillingOrder[] | SaleOrder | BillingOrder | ShipmentOrder | ShipmentOrder[];
     totalDocuments?: number;
@@ -79,6 +94,7 @@ export interface OrderState {
     saleOrders: SaleOrder[];
     billingOrders: BillingOrder[];
     shipmentOrders: ShipmentOrder[];
+    shipmentOrdersMaterialized: MaterializedOrder[];
     loading: boolean;
     error: string | null;
     status: "pending" | "succeed" | "rejected";

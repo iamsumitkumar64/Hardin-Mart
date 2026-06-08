@@ -30,16 +30,17 @@ export class OrderListingMaterializedViewMigration1778505600006 implements Migra
                             sale_order.uuid,
                             sale_order.user_uuid,
                             sale_order.total_price,
+                            shipment_order.address_uuid,
                             shipment_order.order_status,
                             billing_order.payment_status,
                             sale_order.created_at,
                             sale_order.updated_at,
                             sale_order.deleted_at
-                        FROM "sale_schema"."order" sale_order
-                        LEFT JOIN "billing_schema"."order" billing_order
+                        FROM "${saleSchema}"."order" sale_order
+                        LEFT JOIN "${billingSchema}"."order" billing_order
                             ON billing_order.uuid = sale_order.uuid
                             AND billing_order.deleted_at IS NULL
-                        LEFT JOIN "shipment_schema"."order" shipment_order
+                        LEFT JOIN "${shipmentSchema}"."order" shipment_order
                             ON shipment_order.uuid = sale_order.uuid
                             AND shipment_order.deleted_at IS NULL
                         WHERE sale_order.deleted_at IS NULL

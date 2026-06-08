@@ -1,14 +1,15 @@
 "use client";
 
 import { createSlice } from "@reduxjs/toolkit";
-import { BillingOrder, SaleOrder, OrderState, ShipmentOrder, OrderResponse } from "./order-type";
-import { createOrder, getBillingOrders, getSaleOrders, getShipmentOrders } from "./order-action";
+import { BillingOrder, SaleOrder, OrderState, ShipmentOrder, MaterializedOrder, OrderResponse } from "./order-type";
+import { createOrder, getBillingOrders, getSaleOrders, getShipmentOrders, getShipmentOrdersMaterialized } from "./order-action";
 import { OrderPaymentStatusEnum, OrderStatusEnum } from "@/enum/order.enum";
 
 const initialState: OrderState = {
     saleOrders: [],
     billingOrders: [],
     shipmentOrders: [],
+    shipmentOrdersMaterialized: [],
     loading: false,
     error: null,
     status: "pending",
@@ -26,6 +27,7 @@ const orderSlice = createSlice({
             state.saleOrders = [];
             state.billingOrders = [];
             state.shipmentOrders = [];
+            state.shipmentOrdersMaterialized = [];
             state.error = null;
             state.status = "pending";
         },
@@ -39,6 +41,12 @@ const orderSlice = createSlice({
             if (order) {
                 order.payment_status = action.payload.payment_status;
             }
+
+            //update in materialized view also
+            const mvOrder = state.shipmentOrdersMaterialized.find((item) => item.uuid === action.payload.order_uuid);
+            if (mvOrder) {
+                (mvOrder as any).payment_status = action.payload.payment_status;
+            }
         },
         updateShipmentOrderStatus: (
             state,
@@ -50,6 +58,12 @@ const orderSlice = createSlice({
             if (order) {
                 order.order_status = action.payload.order_status;
             }
+
+            //update in materialized view also   
+            const mvOrder = state.shipmentOrdersMaterialized.find((item) => item.uuid === action.payload.order_uuid);
+            if (mvOrder) {
+                mvOrder.order_status = action.payload.order_status;
+            }
         },
         newBillingOrder: (
             state,
@@ -59,6 +73,11 @@ const orderSlice = createSlice({
         ) => {
             const newOrder = action.payload.order as BillingOrder;
             state.billingOrders.unshift(newOrder);
+
+            //update in materialized view also 
+            if ((newOrder as any).order_status && (newOrder as any).payment_status) {
+                state.shipmentOrdersMaterialized.unshift(newOrder as any);
+            }
         },
     },
     extraReducers: (builder) => {
@@ -151,6 +170,30 @@ const orderSlice = createSlice({
                 state.error = null;
             })
             .addCase(getShipmentOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.status = "rejected";
+                state.error = action.payload as string;
+            })
+            .addCase(getShipmentOrdersMaterialized.pending, (state) => {
+                state.loading = true;
+                state.status = "pending";
+            })
+            .addCase(getShipmentOrdersMaterialized.fulfilled, (state, action) => {
+                state.loading = false;
+                state.status = "succeed";
+
+                const newOrders = action.payload.data as MaterializedOrder[];
+                const uuids = new Set(state.shipmentOrdersMaterialized.map((order) => order.uuid));
+                const filteredOrders = newOrders.filter((order) => !uuids.has(order.uuid));
+
+                state.shipmentOrdersMaterialized = [
+                    ...state.shipmentOrdersMaterialized,
+                    ...filteredOrders,
+                ];
+
+                state.error = null;
+            })
+            .addCase(getShipmentOrdersMaterialized.rejected, (state, action) => {
                 state.loading = false;
                 state.status = "rejected";
                 state.error = action.payload as string;

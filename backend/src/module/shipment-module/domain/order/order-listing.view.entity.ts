@@ -1,4 +1,4 @@
-import { JoinColumn, ManyToOne, ViewColumn, ViewEntity } from "typeorm";
+import { JoinColumn, ManyToOne, OneToMany, PrimaryColumn, ViewColumn, ViewEntity } from "typeorm";
 import { OrderItemEntity } from "../order-item/order-item.entity";
 import { UserAddressEntity } from "../user_address/user.address.entity";
 
@@ -11,6 +11,7 @@ import { UserAddressEntity } from "../user_address/user.address.entity";
             sale_order.uuid,
             sale_order.user_uuid,
             sale_order.total_price,
+            shipment_order.address_uuid,
             shipment_order.order_status,
             billing_order.payment_status,
             sale_order.created_at,
@@ -27,7 +28,7 @@ import { UserAddressEntity } from "../user_address/user.address.entity";
     `,
 })
 export class OrderListingViewEntity {
-    @ViewColumn()
+    @PrimaryColumn()
     uuid: string;
 
     @ViewColumn()
@@ -36,19 +37,21 @@ export class OrderListingViewEntity {
     @ViewColumn()
     total_price: number;
 
-    @ManyToOne(() => OrderItemEntity)
-    @JoinColumn({ name: "uuid" })
-    items: OrderItemEntity;
+    @ViewColumn()
+    address_uuid: string;
 
-    @ManyToOne(() => UserAddressEntity)
-    @JoinColumn({ name: "uuid" })
+    @OneToMany(() => OrderItemEntity, (item) => item.order)
+    items: OrderItemEntity[];
+
+    @ManyToOne(() => UserAddressEntity, (address) => address.orders)
+    @JoinColumn({ name: "address_uuid" })
     address: UserAddressEntity;
 
     @ViewColumn()
-    order_status: number;
+    order_status: string;
 
     @ViewColumn()
-    payment_status: number;
+    payment_status: string;
 
     @ViewColumn()
     created_at: Date;
