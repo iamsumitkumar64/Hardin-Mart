@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RootState } from "@/redux/store";
-import { addAddress, deleteAddress, getAddresses } from "@/redux/feature/address/address.action";
-import { Address } from "@/redux/feature/address/address.type";
+import { addAddress, deleteAddress, getAddresses } from "@/redux/feature/address/address-action";
+import { Address } from "@/redux/feature/address/address-type";
 import { AddressFormData, addressSchema } from "@/schemas/address";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
 import { Modal, Box, Typography, TextField, Checkbox, FormControlLabel, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, CircularProgress, } from "@mui/material";
@@ -145,7 +145,7 @@ export default function UserAddressModal({ isOpen, onClose, onSelectAddress }: A
                                             onClose();
                                         }}
                                     >
-                                        Use Cart Address
+                                        use in current cart
                                     </Button>
                                     <Button
                                         className={styles.deleteAddress}

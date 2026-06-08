@@ -17,7 +17,7 @@ export class OrderPaidConsumer implements OnModuleInit {
 
     async onModuleInit() {
         await this.rabbitMQService.consumeMessages<RabbitMQConsumerMessage<OrderPaidMQEventPayload>>(
-            QueueEnum.SHIPMENT_ORDER_PAID_QUEUE,
+            QueueEnum.SHIPMENT_ORDER_BLLIED_QUEUE,
             async (data) => {
                 const { outbox_uuid, payload } = data;
 

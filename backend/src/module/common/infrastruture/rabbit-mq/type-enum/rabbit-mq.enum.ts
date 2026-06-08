@@ -25,25 +25,27 @@ export enum ExchangeNameEnum {
 export enum RoutingKeyEnum {
     USER_REGISTERED = 'user.registered',
 
-    ORDER_CREATED = 'order.created',
-    ORDER_PAID = 'order.paid',
+    ORDER_BLLIED = 'order.billed',
+
     ORDER_REFUND = 'order.refund',
 
-    BILLING_ORDER_CREATED = 'billing.order.created',
+    ORDER_PLACED = 'order.placed',
 }
 
 // queue name (module name) + routing key + endfix(queue)
 export enum QueueEnum {
+    // USER_REGISTERED Key
     CATALOG_USER_REGISTERED_QUEUE = 'catalog.user.registered.queue',
     SALE_USER_REGISTERED_QUEUE = 'sale.user.registered.queue',
     BILLING_USER_REGISTERED_QUEUE = 'billing.user.registered.queue',
     SHIPMENT_USER_REGISTERED_QUEUE = 'shipment.user.registered.queue',
 
-    BILLING_ORDER_CREATED_QUEUE = 'billing.order.created.queue',
-    SHIPMENT_ORDER_CREATED_QUEUE = 'shipment.order.created.queue',
+    // ORDER_BLLIED Key
+    SHIPMENT_ORDER_BLLIED_QUEUE = 'shipment.order.billed.queue',
 
-    SHIPMENT_ORDER_PAID_QUEUE = 'shipment.order.paid.queue',
+    // ORDER_REFUND Key
     BILLING_ORDER_REFUND_QUEUE = 'billing.order.refund.queue',
 
-    BILLING_ORDER_CREATED_PAY_QUEUE = 'billing.order.created.pay.queue'
+    // ORDER_PLACED Key
+    BILLING_ORDER_PLACED_QUEUE = 'billing.order.placed.queue'
 }

@@ -31,6 +31,7 @@ export class AuthenticateMiddleware implements NestMiddleware {
             }
 
             req.user = isExistsAndActiveUser[0];
+            req.token = token;
             // valid request and authenticate account 
 
             next();

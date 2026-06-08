@@ -2,7 +2,7 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
-import { AddAddressPayload, UpdateAddressPayload, DeleteAddressPayload, AddressResponse } from "./address.type";
+import { AddAddressPayload, UpdateAddressPayload, DeleteAddressPayload, AddressResponse } from "./address-type";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 

@@ -30,7 +30,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
             await this.setupInitialCreation();
 
             // fair dispatch means at one time a channel can hold 5 unacknowledged msg with 6th will pass on to another channel
-            await this.channel.prefetch(5);
+            await this.channel.prefetch(Number(process.env.RABBIT_MQ_PREFETCH_COUNT) || 25);
 
             // checking channel connection
             this.channel.on('error', (err: any) => {
@@ -95,32 +95,14 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         );
         await this.setupRetryQueue(QueueEnum.SHIPMENT_USER_REGISTERED_QUEUE);
 
-        // billing order created queue
+        // shipment order billed queue
         await this.setupExchangeQueueAndBind(
-            QueueEnum.BILLING_ORDER_CREATED_QUEUE,
+            QueueEnum.SHIPMENT_ORDER_BLLIED_QUEUE,
             ExchangeNameEnum.ORDER_EXCHANGE,
-            RoutingKeyEnum.ORDER_CREATED,
+            RoutingKeyEnum.ORDER_BLLIED,
             ExchangeTypeEnum.DIRECT,
         );
-        await this.setupRetryQueue(QueueEnum.BILLING_ORDER_CREATED_QUEUE);
-
-        // shipment order created queue
-        await this.setupExchangeQueueAndBind(
-            QueueEnum.SHIPMENT_ORDER_CREATED_QUEUE,
-            ExchangeNameEnum.ORDER_EXCHANGE,
-            RoutingKeyEnum.ORDER_CREATED,
-            ExchangeTypeEnum.DIRECT,
-        );
-        await this.setupRetryQueue(QueueEnum.SHIPMENT_ORDER_CREATED_QUEUE);
-
-        // shipment order paid queue
-        await this.setupExchangeQueueAndBind(
-            QueueEnum.SHIPMENT_ORDER_PAID_QUEUE,
-            ExchangeNameEnum.ORDER_EXCHANGE,
-            RoutingKeyEnum.ORDER_PAID,
-            ExchangeTypeEnum.DIRECT,
-        );
-        await this.setupRetryQueue(QueueEnum.SHIPMENT_ORDER_PAID_QUEUE);
+        await this.setupRetryQueue(QueueEnum.SHIPMENT_ORDER_BLLIED_QUEUE);
 
         // billing order refund queue
         await this.setupExchangeQueueAndBind(
@@ -131,14 +113,14 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         );
         await this.setupRetryQueue(QueueEnum.BILLING_ORDER_REFUND_QUEUE);
 
-        // billing order created now pay queue
+        // billing order placed now pay queue
         await this.setupExchangeQueueAndBind(
-            QueueEnum.BILLING_ORDER_CREATED_PAY_QUEUE,
+            QueueEnum.BILLING_ORDER_PLACED_QUEUE,
             ExchangeNameEnum.ORDER_EXCHANGE,
-            RoutingKeyEnum.BILLING_ORDER_CREATED,
+            RoutingKeyEnum.ORDER_PLACED,
             ExchangeTypeEnum.DIRECT,
         );
-        await this.setupRetryQueue(QueueEnum.BILLING_ORDER_CREATED_PAY_QUEUE);
+        await this.setupRetryQueue(QueueEnum.BILLING_ORDER_PLACED_QUEUE);
     }
 
     private async setupRetryQueue(originalQueue: string, retryDelay = Number(process.env.RETRYDELAY) || 15000) {

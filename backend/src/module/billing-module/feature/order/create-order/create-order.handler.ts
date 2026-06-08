@@ -8,7 +8,7 @@ import { SocketService } from "src/module/common/infrastruture/socket/socket.ser
 import { runOnTransactionCommit, Transactional } from "typeorm-transactional";
 
 @Injectable()
-export class OrderCreatedService {
+export class CreateOrderService {
     constructor(
         private readonly orderRepository: OrderRepository,
         private readonly outboxRepository: OutboxRepository,
@@ -33,7 +33,7 @@ export class OrderCreatedService {
             // create outbox entry
             await this.outboxRepository.createOutboxEntry({
                 exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
-                routing_key: RoutingKeyEnum.BILLING_ORDER_CREATED,
+                routing_key: RoutingKeyEnum.ORDER_PLACED,
                 message_payload: {
                     order_uuid: order.order_uuid,
                     user_uuid: order.user_uuid,

@@ -6,6 +6,8 @@ import { OrderRepository } from "src/module/sale-module/infrastructure/repositor
 import { OrderItemRepository } from "src/module/sale-module/infrastructure/repository/order.item.repository";
 import { OutboxRepository } from "src/module/sale-module/infrastructure/repository/outbox.repository";
 import { Transactional } from "typeorm-transactional";
+import { ApiCallService } from "src/module/common/infrastruture/services/api.call.service";
+import type { Request } from "express";
 
 @Injectable()
 export class CreateOrderService {
@@ -18,10 +20,16 @@ export class CreateOrderService {
     @Transactional({
         connectionName: process.env.DB_POSTGRES_SALE_SCHEMA || 'sale_schema',
     })
-    async handle(user: UserEntity, body: CreateOrderDto) {
+    async handle(req: Request, body: CreateOrderDto) {
         const { items } = body;
+        const { user, token } = req;
 
-        const order = await this.orderRepository.createOrder({ user_uuid: user.uuid, });
+        const order = await this.orderRepository.createOrder(
+            {
+                user_uuid: user.uuid,
+                total_price: body.total_price,
+            }
+        );
         const orderItems = await Promise.all(
             items.map(item =>
                 this.orderItemRepository.createOrderItem({
@@ -32,40 +40,32 @@ export class CreateOrderService {
             )
         );
         order.items = orderItems;
+        const newOrder = {
+            order_id: order.id,
+            order_uuid: order.uuid,
+            user_uuid: user.uuid,
+            total_price: body.total_price,
+            address_uuid: body.address_uuid,
+            items: items.map((item, index) => ({
+                uuid: orderItems[index].uuid,
+                id: orderItems[index].id,
+                product_uuid: item.product_uuid,
+                quantity: item.quantity,
+                created_at: orderItems[index].created_at,
+            })),
+            created_at: order.created_at,
+        }
 
-        // not publish direct to mq-queue
-        // await this.rabbitMQService.publishToExchange(
-        //     ExchangeNameEnum.ORDER_EXCHANGE,
-        //     RoutingKeyEnum.ORDER_CREATED,
-        //     {
-        //         order_uuid: order.uuid,
-        //         user_uuid: user.uuid,
-        //         total_price,
-        //         created_at: new Date(),
-        //     }
-        // );
+        const API_URL = process.env.BACKEND_URL;
+        const billingUrl = `${API_URL}/api/v1/billing/order`;
+        const shipmentUrl = `${API_URL}/api/v1/shipment/order`;
+        const headers = {
+            "Content-Type": "application/json",
+            Authorization: token,
+        };
 
-        // make entry of publish exchange
-        await this.outboxRepository.createOutboxEntry({
-            exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
-            routing_key: RoutingKeyEnum.ORDER_CREATED,
-            message_payload: {
-                order_id: order.id,
-                order_uuid: order.uuid,
-                user_uuid: user.uuid,
-                total_price: body.total_price,
-                address_uuid: body.address_uuid,
-                items: items.map((item, index) => ({
-                    uuid: orderItems[index].uuid,
-                    id: orderItems[index].id,
-                    product_uuid: item.product_uuid,
-                    quantity: item.quantity,
-                    created_at: orderItems[index].created_at,
-                })),
-                created_at: order.created_at,
-            },
-        });
-
+        await ApiCallService(billingUrl, 'POST', headers, JSON.stringify(newOrder));
+        await ApiCallService(shipmentUrl, 'POST', headers, JSON.stringify(newOrder));
         return {
             data: order
         };

@@ -11,6 +11,7 @@ import { OutboxEntity } from "../../domain/outbox/outbox.entity";
 import { ProductEntity } from "../../domain/product/product.entity";
 import { OrderItemEntity } from "../../domain/order-item/order-item.entity";
 import { ProductListingViewEntity } from "../../domain/product/product-listing.view.entity";
+import { OrderListingViewEntity } from "../../domain/order/order-listing.view.entity";
 
 const options: DataSourceOptions = {
     type: process.env.DB_POSTGRES_TYPE as any,
@@ -23,6 +24,7 @@ const options: DataSourceOptions = {
         UserEntity, InboxEntity, OutboxEntity,
         UserAddressEntity, OrderEntity, ProductEntity,
         OrderItemEntity, ProductListingViewEntity,
+        OrderListingViewEntity,
     ],
     schema: process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema',
     synchronize: false,

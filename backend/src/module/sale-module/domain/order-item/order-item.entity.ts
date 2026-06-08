@@ -31,7 +31,7 @@ export class OrderItemEntity {
 
     @ManyToOne(() => ProductEntity, (product) => product.order_item)
     @JoinColumn({ name: "product_uuid" })
-    product: OrderEntity;
+    product: ProductEntity;
 
     @CreateDateColumn()
     created_at: Date;

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch } from "@/redux/hooks.ts";
 import { addAmountSchema, AddAmountSchemaType } from "@/schemas/payment";
-import { addAmount, getWallet, getwalletHistories } from "@/redux/feature/wallet/wallet.action";
+import { addAmount, getWallet, getwalletHistories } from "@/redux/feature/wallet/wallet-action";
 
 interface Props {
     open: boolean;

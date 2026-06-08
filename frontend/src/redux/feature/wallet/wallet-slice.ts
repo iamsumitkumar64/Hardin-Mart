@@ -1,8 +1,8 @@
 "use client";
 
 import { createSlice } from "@reduxjs/toolkit";
-import { addAmount, getWallet, getwalletHistories } from "./wallet.action";
-import { WalletState } from "./wallet.type";
+import { addAmount, getWallet, getwalletHistories } from "./wallet-action";
+import { WalletState } from "./wallet-type";
 
 const initialState: WalletState = {
     wallet: null,

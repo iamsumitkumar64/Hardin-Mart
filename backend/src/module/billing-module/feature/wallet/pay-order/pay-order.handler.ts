@@ -77,7 +77,7 @@ export class PayOrderService {
             // create outbox entry
             await this.outboxRepository.createOutboxEntry({
                 exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
-                routing_key: RoutingKeyEnum.ORDER_PAID,
+                routing_key: RoutingKeyEnum.ORDER_BLLIED,
                 message_payload: {
                     order_uuid,
                     user_uuid: user_uuid,

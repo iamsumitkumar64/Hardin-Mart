@@ -16,7 +16,7 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
-import { payOrder } from "@/redux/feature/wallet/wallet.action";
+import { payOrder } from "@/redux/feature/wallet/wallet-action";
 import Razorpay from 'razorpay';
 
 export default function OrderPage() {

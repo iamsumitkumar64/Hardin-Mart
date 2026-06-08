@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
 import { CartItem } from "@/redux/feature/cart/cart-type";
 import { clearCartState, removeCartItem, updateCartItemQuantity, } from "@/redux/feature/cart/cart-slice";
 import { createOrder } from "@/redux/feature/order/order-action";
-import { getAddresses } from "@/redux/feature/address/address.action";
+import { getAddresses } from "@/redux/feature/address/address-action";
 import UserAddressModal from "@/component/user-address-modal/user-address-modal";
 
 export default function CartPage() {

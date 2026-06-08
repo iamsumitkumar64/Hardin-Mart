@@ -5,7 +5,7 @@ import { OrderItemRepository } from "src/module/shipment-module/infrastructure/r
 import { Transactional } from "typeorm-transactional";
 
 @Injectable()
-export class OrderCreatedService {
+export class CreateOrderService {
     constructor(
         private readonly orderRepository: OrderRepository,
         private readonly orderItemRepository: OrderItemRepository,

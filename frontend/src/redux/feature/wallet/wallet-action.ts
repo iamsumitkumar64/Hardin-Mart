@@ -2,7 +2,7 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
-import { AddAmountPayload, AddCardPayload, PayOrderPayload, PayPayload, } from "./wallet.type";
+import { AddAmountPayload, AddCardPayload, PayOrderPayload, PayPayload, } from "./wallet-type";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 

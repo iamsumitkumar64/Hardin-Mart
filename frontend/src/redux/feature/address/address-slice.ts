@@ -1,8 +1,8 @@
 "use client";
 
 import { createSlice } from "@reduxjs/toolkit";
-import { AddressState } from "./address.type";
-import { getAddresses, addAddress, deleteAddress } from "./address.action";
+import { AddressState } from "./address-type";
+import { getAddresses, addAddress, deleteAddress } from "./address-action";
 
 const initialState: AddressState = {
     addresses: null,

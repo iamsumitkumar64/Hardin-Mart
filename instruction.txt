@@ -1,6 +1,6 @@
 
 steps to run this repo code (open 2 terminal)
-1. -> docker compose up --build  (1st terminal command)
+1. -> docker compose up --build (1st terminal command)
 2. -> docker compose exec backend sh (2nd terminal command)
 
 For Creation

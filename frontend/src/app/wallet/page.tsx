@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Box, Button, Card, CardContent, CircularProgress, Container, Typography } from "@mui/material";
 import { RootState, AppDispatch } from "@/redux/store";
 import styles from "./wallet.module.css"
-import { getWallet, getwalletHistories } from "@/redux/feature/wallet/wallet.action";
+import { getWallet, getwalletHistories } from "@/redux/feature/wallet/wallet-action";
 import { WalletHistoryTypeEnum } from "@/enum/wallet.enum";
-import AddAmountModal from "@/component/add-amount-modal/AddAmountModal";
+import AddAmountModal from "@/component/add-amount-modal/add-amount-modal";
 
 export default function PaymentHistoryPage() {
     const dispatch = useDispatch<AppDispatch>();
