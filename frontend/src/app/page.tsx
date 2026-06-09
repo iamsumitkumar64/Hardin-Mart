@@ -21,16 +21,8 @@ export default function Home() {
   const limit = Number(process.env.NEXT_PUBLIC_PAGE_LIMIT) || 10;
   const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    if (!products?.length) {
-      fetchInitialProducts();
-    }
-  }, []);
-
   const fetchInitialProducts = async () => {
     try {
-      setOffset(0);
-
       await dispatch(getProducts({ limit, offset: 0 })).unwrap();
       // await dispatch(getCatalogProducts({ limit, offset: 0 })).unwrap();
       // await dispatch(getSaleProducts({ limit, offset: 0 })).unwrap();
@@ -40,6 +32,10 @@ export default function Home() {
       enqueueSnackbar(err, { variant: "warning" });
     }
   };
+
+  useEffect(() => {
+    fetchInitialProducts();
+  }, []);
 
   const fetchMoreProducts = async () => {
     try {

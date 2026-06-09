@@ -92,7 +92,9 @@ const orderSlice = createSlice({
 
                 const newOrders = action.payload.data as SaleOrder[];
 
-                if (state.saleOrders) {
+                if (action.payload.offset === 0) {
+                    state.saleOrders = newOrders;
+                } else if (state.saleOrders) {
                     const uuids = new Set(
                         state.saleOrders.map((order) => order.uuid)
                     );
@@ -126,7 +128,9 @@ const orderSlice = createSlice({
 
                 const newOrders = action.payload.data as BillingOrder[];
 
-                if (state.billingOrders) {
+                if (action.payload.offset === 0) {
+                    state.billingOrders = newOrders;
+                } else if (state.billingOrders) {
                     const uuids = new Set(
                         state.billingOrders.map((order) => order.uuid)
                     );
@@ -159,13 +163,17 @@ const orderSlice = createSlice({
                 state.status = "succeed";
 
                 const newOrders = action.payload.data as ShipmentOrder[];
-                const uuids = new Set(state.shipmentOrders.map((order) => order.uuid));
-                const filteredOrders = newOrders.filter((order) => !uuids.has(order.uuid));
+                if (action.payload.offset === 0) {
+                    state.shipmentOrders = newOrders;
+                } else {
+                    const uuids = new Set(state.shipmentOrders.map((order) => order.uuid));
+                    const filteredOrders = newOrders.filter((order) => !uuids.has(order.uuid));
 
-                state.shipmentOrders = [
-                    ...state.shipmentOrders,
-                    ...filteredOrders,
-                ];
+                    state.shipmentOrders = [
+                        ...state.shipmentOrders,
+                        ...filteredOrders,
+                    ];
+                }
 
                 state.error = null;
             })
@@ -183,13 +191,17 @@ const orderSlice = createSlice({
                 state.status = "succeed";
 
                 const newOrders = action.payload.data as MaterializedOrder[];
-                const uuids = new Set(state.shipmentOrdersMaterialized.map((order) => order.uuid));
-                const filteredOrders = newOrders.filter((order) => !uuids.has(order.uuid));
+                if (action.payload.offset === 0) {
+                    state.shipmentOrdersMaterialized = newOrders;
+                } else {
+                    const uuids = new Set(state.shipmentOrdersMaterialized.map((order) => order.uuid));
+                    const filteredOrders = newOrders.filter((order) => !uuids.has(order.uuid));
 
-                state.shipmentOrdersMaterialized = [
-                    ...state.shipmentOrdersMaterialized,
-                    ...filteredOrders,
-                ];
+                    state.shipmentOrdersMaterialized = [
+                        ...state.shipmentOrdersMaterialized,
+                        ...filteredOrders,
+                    ];
+                }
 
                 state.error = null;
             })

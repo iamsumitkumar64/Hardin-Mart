@@ -6,7 +6,7 @@ import { Box, Button, Card, CardContent, CircularProgress, Container, Typography
 import { RootState, } from "@/redux/store";
 import styles from "./order.module.css";
 import { getShipmentOrdersMaterialized, getRazorPayLink } from "@/redux/feature/order/order-action";
-import { SaleOrder, OrderItem, MaterializedOrder } from "@/redux/feature/order/order-type";
+import { OrderItem, MaterializedOrder } from "@/redux/feature/order/order-type";
 import { enqueueSnackbar } from "notistack";
 import Image from "next/image";
 import Slider from "react-slick";
@@ -28,18 +28,17 @@ export default function OrderPage() {
     const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
-        // if (!saleOrders?.length) {
-        clearOrderState();
-        fetchOrders();
+        dispatch(clearOrderState());
         setOffset(0);
-        // }
+        setHasMore(true);
+        fetchOrders(0);
     }, []);
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (currentOffset = offset) => {
         try {
-            const result = await dispatch(getShipmentOrdersMaterialized({ limit, offset: offset })).unwrap();
+            const result = await dispatch(getShipmentOrdersMaterialized({ limit, offset: currentOffset })).unwrap();
             const fetchedOrders = Array.isArray(result.data) ? result.data : [];
-            setOffset(prevOffset => prevOffset + limit);
+            setOffset(currentOffset + limit);
             if (fetchedOrders.length < limit) setHasMore(false);
         } catch (err: any) {
             console.log(err);
