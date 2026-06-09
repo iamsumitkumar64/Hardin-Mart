@@ -13,7 +13,7 @@ export interface OrderItem {
 
 export interface SaleOrder {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     total_price?: string;
     items: OrderItem[];
     created_at: string;
@@ -24,7 +24,7 @@ export interface SaleOrder {
 
 export interface BillingOrder {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     total_price?: string;
     payment_status: OrderPaymentStatusEnum;
     created_at: string;
@@ -35,7 +35,7 @@ export interface BillingOrder {
 
 export interface Address {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     street: string;
     city: string;
     state: string;
@@ -49,7 +49,7 @@ export interface Address {
 
 export interface ShipmentOrder {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     address_uuid: string;
     order_status: OrderStatusEnum;
     address: Address;
@@ -60,7 +60,7 @@ export interface ShipmentOrder {
 
 export interface MaterializedOrder {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     total_price?: string | number;
     address_uuid?: string | null;
     order_status: OrderStatusEnum;

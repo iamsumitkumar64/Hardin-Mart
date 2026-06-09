@@ -9,13 +9,22 @@ import * as UserUserRepository from 'src/module/user-module/infrastructure/repos
 import * as CatalogUserRepository from 'src/module/catalog-module/infrastructure/repository/user.repository';
 import * as CatalogInboxRepository from 'src/module/catalog-module/infrastructure/repository/inbox.repository';
 import * as CatalogUserRegisteredConsumer from 'src/module/catalog-module/infrastructure/rabbit-mq-consumer/user/user-registered/user-registered.consumer';
-import * as CatalogUserRegisterHandler from 'src/module/catalog-module/feature/user/user-register/user-register.handler';
+import * as CatalogUserRegisterService from 'src/module/catalog-module/feature/user/user-register/user-register.handler';
 
 // Sale Module
 import * as SaleUserRepository from 'src/module/sale-module/infrastructure/repository/user.repository';
 import * as SaleInboxRepository from 'src/module/sale-module/infrastructure/repository/inbox.repository';
+import * as SaleOrderRepository from 'src/module/sale-module/infrastructure/repository/order.repository';
 import * as SaleUserRegisteredConsumer from 'src/module/sale-module/infrastructure/rabbit-mq-consumer/user/user-registered/user-registered.consumer';
-import * as SaleUserRegisterHandler from 'src/module/sale-module/feature/user/user-register/user-register.handler';
+import * as SaleUserRegisterService from 'src/module/sale-module/feature/user/user-register/user-register.handler';
+import * as SaleOrderBilledService from 'src/module/sale-module/feature/order/order-billed/order-billed.handler';
+import * as SaleOrderRefundService from 'src/module/sale-module/feature/order/order-refund/order-refund.handler';
+import * as SaleOrderPaymentFailedService from 'src/module/sale-module/feature/order/order-payment-failed/order-payment-failed.handler';
+import * as SaleOrderShippingLabelCreatedService from 'src/module/sale-module/feature/order/order-shipping-label-created/order-shipping-label-created.handler';
+import * as SaleOrderBilledConsumer from 'src/module/sale-module/infrastructure/rabbit-mq-consumer/order/order-billed/order-billed.consumer';
+import * as SaleOrderShippingLabelCreatedConsumer from 'src/module/sale-module/infrastructure/rabbit-mq-consumer/order/order-shipping-label-created/order-shipping-label-created.consumer';
+import * as SaleOrderRefundConsumer from 'src/module/sale-module/infrastructure/rabbit-mq-consumer/order/order-refund/order-refund.consumer';
+import * as SaleOrderPaymentFailedConsumer from 'src/module/sale-module/infrastructure/rabbit-mq-consumer/order/order-payment-failed/order-payment-failed.consumer';
 
 // Billing Module
 import * as BillingUserRepo from 'src/module/billing-module/infrastructure/repository/user.repository';
@@ -25,9 +34,9 @@ import * as BillingOrderRepo from 'src/module/billing-module/infrastructure/repo
 import * as BillingWalletRepo from 'src/module/billing-module/infrastructure/repository/wallet.repository';
 import * as BillingWalletHistoryRepo from 'src/module/billing-module/infrastructure/repository/wallet.history.repository';
 import * as BillingUserRegisterService from 'src/module/billing-module/feature/user/user-register/user-register.handler';
-import * as BillingPayOrderService from 'src/module/billing-module/feature/wallet/pay-order/pay-order.handler';
+import * as BillingOrderPlacedService from 'src/module/billing-module/feature/order/order-placed/order-placed.handler';
 import * as BillingOrderRefundService from 'src/module/billing-module/feature/order/order-refund/order-refund.handler';
-import * as BillingOrderCreatedPayConsumer from 'src/module/billing-module/infrastructure/rabbit-mq-consumer/order/order-created-pay/order-created-pay.consumer';
+import * as BillingOrderPlacedConsumer from 'src/module/billing-module/infrastructure/rabbit-mq-consumer/order/order-placed/order-placed.consumer';
 import * as BillingUserRegisteredConsumer from 'src/module/billing-module/infrastructure/rabbit-mq-consumer/user/user-registered/user-registered.consumer';
 import * as BillingOrderRefundConsumer from 'src/module/billing-module/infrastructure/rabbit-mq-consumer/order/order-refund/order-refund.consumer';
 
@@ -39,9 +48,11 @@ import * as ShipmentOrderItemRepo from 'src/module/shipment-module/infrastructur
 import * as ShipmentProductRepo from 'src/module/shipment-module/infrastructure/repository/product.repository';
 import * as ShipmentOutboxRepo from 'src/module/shipment-module/infrastructure/repository/outbox.repository';
 import * as ShipmentUserRegisterService from 'src/module/shipment-module/feature/user/user-register/user-register.handler';
-import * as ShipmentOrderPaidService from 'src/module/shipment-module/feature/order/order-paid/order-paid.handler';
+import * as ShipmentOrderPlacedService from 'src/module/shipment-module/feature/order/order-placed/order-placed.handler';
+import * as ShipmentOrderBilledService from 'src/module/shipment-module/feature/order/order-billed/order-billed.handler';
 import * as ShipmentUserRegisteredConsumer from 'src/module/shipment-module/infrastructure/rabbit-mq-consumer/user/user-registered/user-registered.consumer';
-import * as ShipmentOrderPaidConsumer from 'src/module/shipment-module/infrastructure/rabbit-mq-consumer/order/order-paid/order-paid.consumer';
+import * as ShipmentOrderBilledConsumer from 'src/module/shipment-module/infrastructure/rabbit-mq-consumer/order/order-billed/order-billed.consumer';
+import * as ShipmentOrderPlacedConsumer from 'src/module/shipment-module/infrastructure/rabbit-mq-consumer/order/order-placed/order-placed.consumer';
 
 @Global()
 @Module({
@@ -57,13 +68,22 @@ import * as ShipmentOrderPaidConsumer from 'src/module/shipment-module/infrastru
         CatalogUserRepository.UserRepository,
         CatalogInboxRepository.InboxRepository,
         CatalogUserRegisteredConsumer.UserRegisteredConsumer,
-        CatalogUserRegisterHandler.UserRegisterService,
+        CatalogUserRegisterService.UserRegisterService,
 
         // Sale Module
         SaleUserRepository.UserRepository,
         SaleInboxRepository.InboxRepository,
+        SaleOrderRepository.OrderRepository,
         SaleUserRegisteredConsumer.UserRegisteredConsumer,
-        SaleUserRegisterHandler.UserRegisterService,
+        SaleOrderShippingLabelCreatedService.OrderShippingLabelCreatedService,
+        SaleOrderBilledService.OrderBilledService,
+        SaleUserRegisterService.UserRegisterService,
+        SaleOrderPaymentFailedService.OrderPaymentFailedService,
+        SaleOrderRefundService.OrderRefundService,
+        SaleOrderBilledConsumer.OrderBilledConsumer,
+        SaleOrderShippingLabelCreatedConsumer.OrderShippingLabelCreatedConsumer,
+        SaleOrderRefundConsumer.OrderRefundConsumer,
+        SaleOrderPaymentFailedConsumer.OrderPaymentFailedConsumer,
 
         // Billing Module
         BillingUserRepo.UserRepository,
@@ -73,10 +93,10 @@ import * as ShipmentOrderPaidConsumer from 'src/module/shipment-module/infrastru
         BillingWalletRepo.WalletRepository,
         BillingWalletHistoryRepo.WalletHistoryRepository,
         BillingUserRegisterService.UserRegisterService,
-        BillingPayOrderService.PayOrderService,
+        BillingOrderPlacedService.OrderPlacedService,
         BillingOrderRefundService.OrderRefundService,
         BillingUserRegisteredConsumer.UserRegisteredConsumer,
-        BillingOrderCreatedPayConsumer.OrderCreatedPayConsumer,
+        BillingOrderPlacedConsumer.OrderPlacedConsumer,
         BillingOrderRefundConsumer.OrderRefundConsumer,
 
         // Shipment Module
@@ -87,9 +107,11 @@ import * as ShipmentOrderPaidConsumer from 'src/module/shipment-module/infrastru
         ShipmentOutboxRepo.OutboxRepository,
         ShipmentInboxRepo.InboxRepository,
         ShipmentUserRegisterService.UserRegisterService,
-        ShipmentOrderPaidService.OrderPaidService,
+        ShipmentOrderBilledService.OrderBilledService,
+        ShipmentOrderPlacedService.OrderPlacedService,
         ShipmentUserRegisteredConsumer.UserRegisteredConsumer,
-        ShipmentOrderPaidConsumer.OrderPaidConsumer,
+        ShipmentOrderBilledConsumer.OrderBilledConsumer,
+        ShipmentOrderPlacedConsumer.OrderPlacedConsumer,
     ],
     exports: [RabbitMQService],
 })

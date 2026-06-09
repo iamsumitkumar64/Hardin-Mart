@@ -4,7 +4,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { OrderResponse, CreateOrderPayload } from "./order-type";
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const SELF_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
 export const getSaleOrders = createAsyncThunk<
     OrderResponse,
@@ -23,7 +24,7 @@ export const getSaleOrders = createAsyncThunk<
             const token = getState().authReducer.token || "";
 
             const res = await fetch(
-                `${API_URL}/api/v1/sale/order?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/sale/order?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -62,7 +63,7 @@ export const getBillingOrders = createAsyncThunk<
             const token = getState().authReducer.token || "";
 
             const res = await fetch(
-                `${API_URL}/api/v1/billing/order?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/billing/order?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -101,7 +102,7 @@ export const getShipmentOrders = createAsyncThunk<
             const token = getState().authReducer.token || "";
 
             const res = await fetch(
-                `${API_URL}/api/v1/shipment/order?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/shipment/order?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -140,7 +141,7 @@ export const getShipmentOrdersMaterialized = createAsyncThunk<
             const token = getState().authReducer.token || "";
 
             const res = await fetch(
-                `${API_URL}/api/v1/shipment/order/materialized-view?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/shipment/order/materialized-view?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -172,7 +173,7 @@ export const createOrder = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/api/v1/sale/order/place`, {
+            const res = await fetch(`${SELF_URL}/api/v1/order/place`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -203,7 +204,7 @@ export const getRazorPayLink = createAsyncThunk<
         try {
             const token = getState().authReducer.token || "";
 
-            const res = await fetch(`${API_URL}/api/v1/razor/pay/link`, {
+            const res = await fetch(`${BACKEND_URL}/api/v1/razor/pay/link`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

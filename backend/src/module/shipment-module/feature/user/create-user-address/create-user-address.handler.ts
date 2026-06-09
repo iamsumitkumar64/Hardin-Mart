@@ -18,7 +18,7 @@ export class CreateUserAddressService {
 
         const data = await this.userAddressRepository.createAddress({
             ...body,
-            user_uuid: user.uuid,
+            customer_uuid: user.uuid,
         });
 
         return {

@@ -21,6 +21,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "strictPropertyInitialization": false, // this help while intialize ts error in entities
+    "strictPropertyInitialization": false, // this help while intialize ts errors
   }
 }

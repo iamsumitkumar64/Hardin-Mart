@@ -16,7 +16,7 @@ export class WalletHistoryEntity {
     id: number;
 
     @Column({ type: "uuid", nullable: false })
-    user_uuid: string;
+    customer_uuid: string;
 
     @Column({ type: "uuid", nullable: true })
     order_uuid: string;
@@ -31,7 +31,7 @@ export class WalletHistoryEntity {
     description: string;
 
     @ManyToOne(() => UserEntity, (user) => user.wallet_histories)
-    @JoinColumn({ name: "user_uuid" })
+    @JoinColumn({ name: "customer_uuid" })
     user: UserEntity;
 
     @CreateDateColumn()

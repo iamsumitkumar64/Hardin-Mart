@@ -1,6 +1,6 @@
 export interface Address {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     street: string;
     city: string;
     state: string;

@@ -21,13 +21,13 @@ export class AddAmountService {
 
         const wallet = await this.walletRepository.upsertWallet(user.uuid);
         // if (!wallet) {
-        //     wallet = await this.walletRepository.createWallet({ user_uuid: user.uuid, balance: 0 });
+        //     wallet = await this.walletRepository.createWallet({ customer_uuid: user.uuid, balance: 0 });
         // }
 
         wallet.balance += amount;
         await this.walletRepository.saveWallet(wallet);
         await this.walletHistoryRepository.createHistory({
-            user_uuid: user.uuid,
+            customer_uuid: user.uuid,
             amount,
             type: WalletHistoryTypeEnum.TOPUP,
             description: 'Wallet top-up',

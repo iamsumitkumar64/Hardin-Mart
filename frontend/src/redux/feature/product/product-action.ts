@@ -1,7 +1,7 @@
 "use client";
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const getProducts = createAsyncThunk(
     "product/materialized-view",
@@ -14,7 +14,7 @@ export const getProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/api/v1/shipment/product/materialized-view?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/shipment/product/materialized-view?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -46,7 +46,7 @@ export const getCatalogProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/api/v1/catalog/product?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/catalog/product?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -78,7 +78,7 @@ export const getSaleProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/api/v1/sale/product?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/sale/product?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {
@@ -110,7 +110,7 @@ export const getShipmentProducts = createAsyncThunk(
     ) => {
         try {
             const res = await fetch(
-                `${API_URL}/api/v1/shipment/product?limit=${limit}&offset=${offset}`,
+                `${BACKEND_URL}/api/v1/shipment/product?limit=${limit}&offset=${offset}`,
                 {
                     method: "GET",
                     headers: {

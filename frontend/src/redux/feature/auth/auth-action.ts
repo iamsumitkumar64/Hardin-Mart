@@ -4,7 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import { SignupSchemaType } from "@/schemas/signup"
 import { persistor } from "@/redux/store"
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
 
 export const signupUser = createAsyncThunk(
     "auth/signup",
@@ -12,7 +12,7 @@ export const signupUser = createAsyncThunk(
         try {
             const { confirmPassword, ...payload } = data
 
-            const res = await fetch(`${API_URL}/api/v1/user/register`, {
+            const res = await fetch(`${BACKEND_URL}/api/v1/user/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -39,7 +39,7 @@ export const loginUser = createAsyncThunk(
         { rejectWithValue }
     ) => {
         try {
-            const res = await fetch(`${API_URL}/api/v1/user/login`, {
+            const res = await fetch(`${BACKEND_URL}/api/v1/user/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

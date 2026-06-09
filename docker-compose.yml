@@ -16,6 +16,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - ecommerce_network
 
   frontend:
     build:
@@ -28,6 +30,8 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules 
+    networks:
+      - ecommerce_network
 
   pgadmin:
     image: dpage/pgadmin4:9.8
@@ -38,7 +42,9 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     volumes:
-    -  backend_pgadmin_data:/var/lib/pgadmin
+      - backend_pgadmin_data:/var/lib/pgadmin
+    networks:
+      - ecommerce_network
 
   database:
     image: postgres:16
@@ -49,6 +55,8 @@ services:
       - "5432:5432"
     volumes:
       - backend_postgres_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce_network
 
   backend:
     build:
@@ -64,7 +72,13 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules  
+    networks:
+      - ecommerce_network
 
 volumes:
   backend_postgres_data: {}
   backend_pgadmin_data: {}
+
+networks:
+  ecommerce_network:
+    driver: bridge

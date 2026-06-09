@@ -9,7 +9,7 @@ export class userAddressMigration1778505600002 implements MigrationInterface {
             columns: [
                 { name: "uuid", type: "uuid", isPrimary: true, generationStrategy: "uuid", default: "uuid_generate_v4()" },
                 { name: "id", type: "bigint", isGenerated: true, generationStrategy: "increment", isUnique: true, isNullable: false },
-                { name: "user_uuid", type: "uuid", isNullable: false },
+                { name: "customer_uuid", type: "uuid", isNullable: false },
                 { name: "street", type: "varchar", isNullable: false },
                 { name: "city", type: "varchar", isNullable: false },
                 { name: "state", type: "varchar", isNullable: false },
@@ -25,7 +25,7 @@ export class userAddressMigration1778505600002 implements MigrationInterface {
         await queryRunner.createForeignKey(
             "user_address",
             new TableForeignKey({
-                columnNames: ["user_uuid"],
+                columnNames: ["customer_uuid"],
                 referencedTableName: "user",
                 referencedColumnNames: ["uuid"],
                 name: "FK_user_address_user",

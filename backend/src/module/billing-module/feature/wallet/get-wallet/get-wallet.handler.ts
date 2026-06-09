@@ -11,7 +11,7 @@ export class GetWalletService {
     async handle(user: UserEntity) {
         const wallet = await this.repository.upsertWallet(user.uuid);
         // if (!wallet) {
-        //     wallet = await this.repository.createWallet({ user_uuid: user.uuid, balance: 0 });
+        //     wallet = await this.repository.createWallet({ customer_uuid: user.uuid, balance: 0 });
         // }
 
         return {

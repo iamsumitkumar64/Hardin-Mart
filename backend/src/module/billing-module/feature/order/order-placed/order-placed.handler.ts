@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { runOnTransactionCommit, Transactional } from "typeorm-transactional";
 import { UserEntity } from "src/module/user-module/domain/user/user.entity";
-import { PayOrderDto } from "./pay-order.dto";
+import { OrderPlacedDto } from "./order-placed.dto";
 import { WalletRepository } from "src/module/billing-module/infrastructure/repository/wallet.repository";
 import { WalletHistoryRepository } from "src/module/billing-module/infrastructure/repository/wallet.history.repository";
 import { OrderRepository } from "src/module/billing-module/infrastructure/repository/order.repository";
@@ -9,41 +9,37 @@ import { OutboxRepository } from "src/module/billing-module/infrastructure/repos
 import { OrderPaymentStatusEnum } from "src/module/billing-module/domain/order/order.enum";
 import { WalletHistoryTypeEnum } from "src/module/billing-module/domain/wallet-history/wallet.enum";
 import { ExchangeNameEnum, RoutingKeyEnum, } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
-import { SocketService } from "src/module/common/infrastruture/socket/socket.service";
-import { SocketEventNameEnum } from "src/module/common/infrastruture/socket/socket.enum";
-import { OrderStatusEnum } from "src/module/shipment-module/domain/order/order.enum";
 
 @Injectable()
-export class PayOrderService {
+export class OrderPlacedService {
     constructor(
         private readonly walletRepository: WalletRepository,
         private readonly walletHistoryRepository: WalletHistoryRepository,
         private readonly orderRepository: OrderRepository,
         private readonly outboxRepository: OutboxRepository,
-        private readonly socketService: SocketService,
     ) { }
 
     @Transactional({
         connectionName: process.env.DB_POSTGRES_BILLING_SCHEMA || "billing_schema",
     })
-    async handle(user_uuid: string, body: PayOrderDto,) {
+    async handle(customer_uuid: string, body: OrderPlacedDto) {
         const { order_uuid } = body;
 
         try {
             // fetch/create wallet
-            const wallet = await this.walletRepository.upsertWallet(user_uuid);
+            const wallet = await this.walletRepository.upsertWallet(customer_uuid);
             // if (!wallet) {
-            //     wallet = await this.walletRepository.createWallet({ user_uuid: user_uuid, balance: 0 });
+            //     wallet = await this.walletRepository.createWallet({ customer_uuid: customer_uuid, balance: 0 });
             // }
 
             // check order
-            const order = await this.orderRepository.findByUserUuidAndOrderUuid(user_uuid, order_uuid,);
+            const order = await this.orderRepository.findByUserUuidAndOrderUuid(customer_uuid, order_uuid,);
             if (!order) {
-                throw new BadRequestException("Order not found",);
+                throw new BadRequestException("Order not found");
             }
 
             if (order.payment_status === OrderPaymentStatusEnum.PAID || order.payment_status === OrderPaymentStatusEnum.REFUND) {
-                throw new BadRequestException("Order payment can't able to process now",);
+                throw new BadRequestException("Order payment can't able to process now");
             }
 
             if (wallet.balance < order.total_price) {
@@ -52,7 +48,18 @@ export class PayOrderService {
                     OrderPaymentStatusEnum.FAILED,
                 );
 
-                throw new BadRequestException("Balance is low . Please do add amount");
+                // throw new BadRequestException("Balance is low . Please do add amount");
+
+                // create outbox entry
+                await this.outboxRepository.createOutboxEntry({
+                    exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
+                    routing_key: RoutingKeyEnum.ORDER_PAYMENT_FAILED,
+                    message_payload: {
+                        order_uuid,
+                        customer_uuid: customer_uuid,
+                    },
+                });
+                return;
             }
 
             // deduct wallet balance
@@ -67,7 +74,7 @@ export class PayOrderService {
 
             // create history
             await this.walletHistoryRepository.createHistory({
-                user_uuid: user_uuid,
+                customer_uuid: customer_uuid,
                 order_uuid,
                 amount: order.total_price,
                 type: WalletHistoryTypeEnum.DEBIT,
@@ -77,31 +84,11 @@ export class PayOrderService {
             // create outbox entry
             await this.outboxRepository.createOutboxEntry({
                 exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
-                routing_key: RoutingKeyEnum.ORDER_BLLIED,
+                routing_key: RoutingKeyEnum.ORDER_BILLED,
                 message_payload: {
                     order_uuid,
-                    user_uuid: user_uuid,
+                    customer_uuid: customer_uuid,
                 },
-            });
-
-            runOnTransactionCommit(async () => {
-                await this.socketService.emitToUser(
-                    user_uuid,
-                    SocketEventNameEnum.ORDER__PAYMENT_STATUS_CHANGED,
-                    {
-                        order_uuid,
-                        payment_status: OrderPaymentStatusEnum.PAID,
-                    },
-                );
-
-                await this.socketService.emitToUser(
-                    user_uuid,
-                    SocketEventNameEnum.ORDER_STATUS_CHANGED,
-                    {
-                        order_uuid,
-                        order_status: OrderStatusEnum.BILLED,
-                    },
-                );
             });
 
             return;
@@ -109,15 +96,6 @@ export class PayOrderService {
             await this.orderRepository.updateOrderPaymentStatus(
                 order_uuid,
                 OrderPaymentStatusEnum.FAILED,
-            );
-
-            await this.socketService.emitToUser(
-                user_uuid,
-                SocketEventNameEnum.ORDER__PAYMENT_STATUS_CHANGED,
-                {
-                    order_uuid,
-                    payment_status: OrderPaymentStatusEnum.FAILED,
-                },
             );
 
             throw error;

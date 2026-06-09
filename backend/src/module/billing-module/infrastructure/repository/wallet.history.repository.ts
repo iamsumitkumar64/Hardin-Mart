@@ -17,10 +17,10 @@ export class WalletHistoryRepository extends Repository<WalletHistoryEntity> {
         return await this.save(history);
     }
 
-    async findHistories(user_uuid: string) {
+    async findHistories(customer_uuid: string) {
         return await this.find({
             where: {
-                user_uuid,
+                customer_uuid,
             },
             order: {
                 created_at: "DESC",

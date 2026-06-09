@@ -3,6 +3,7 @@ import { DataSource, Not, Repository } from "typeorm";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { OrderEntity } from "../../domain/order/order.entity";
 import { UserEntity } from "../../domain/user/user.entity";
+import { OrderStatusEnum } from "../../domain/order/order.enum";
 
 @Injectable()
 export class OrderRepository extends Repository<OrderEntity> {
@@ -31,11 +32,11 @@ export class OrderRepository extends Repository<OrderEntity> {
         return user;
     }
 
-    async findByUserUuidAndOrderUuid(user_uuid: string, order_uuid: string) {
+    async findByUserUuidAndOrderUuid(customer_uuid: string, order_uuid: string) {
         const user = await this.findOne({
             where: {
                 uuid: order_uuid,
-                user_uuid: user_uuid
+                customer_uuid: customer_uuid
             },
             relations: {
                 items: true,
@@ -47,7 +48,7 @@ export class OrderRepository extends Repository<OrderEntity> {
 
     async getOrderListing(user: UserEntity, offset?: number, limit?: number) {
         const [data, total] = await this.findAndCount({
-            where: { user_uuid: user.uuid },
+            where: { customer_uuid: user.uuid },
             relations: {
                 items: true,
             },
@@ -59,5 +60,16 @@ export class OrderRepository extends Repository<OrderEntity> {
         });
 
         return { data, total };
+    }
+
+    async updateOrderStatus(uuid: string, status: OrderStatusEnum) {
+        return await this.update(
+            {
+                uuid: uuid
+            },
+            {
+                order_status: status
+            }
+        )
     }
 }

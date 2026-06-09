@@ -1,6 +1,6 @@
 export interface WalletWallet {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     balance: number;
     created_at: string;
     updated_at: string;
@@ -8,7 +8,7 @@ export interface WalletWallet {
 
 export interface WalletHistory {
     uuid: string;
-    user_uuid: string;
+    customer_uuid: string;
     amount: number;
     type: string;
     card_uuid: string | null;

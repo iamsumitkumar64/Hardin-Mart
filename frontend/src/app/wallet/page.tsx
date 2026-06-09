@@ -12,7 +12,6 @@ import AddAmountModal from "@/component/add-amount-modal/add-amount-modal";
 export default function PaymentHistoryPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { wallet, status, histories, loading, error } = useSelector((state: RootState) => state.walletReducer);
-    const [openCardModal, setOpenCardModal] = useState(false);
     const [openAmountModal, setOpenAmountModal] = useState(false);
 
     useEffect(() => {

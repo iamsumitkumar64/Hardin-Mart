@@ -9,10 +9,10 @@ import { UserAddressEntity } from "../user_address/user.address.entity";
     expression: `
         SELECT
             sale_order.uuid,
-            sale_order.user_uuid,
+            sale_order.customer_uuid,
             sale_order.total_price,
             shipment_order.address_uuid,
-            shipment_order.order_status,
+            sale_order.order_status,
             billing_order.payment_status,
             sale_order.created_at,
             sale_order.updated_at,
@@ -32,7 +32,7 @@ export class OrderListingViewEntity {
     uuid: string;
 
     @ViewColumn()
-    user_uuid: string;
+    customer_uuid: string;
 
     @ViewColumn()
     total_price: number;

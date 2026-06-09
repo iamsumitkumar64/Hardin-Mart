@@ -16,7 +16,7 @@ export class OrderEntity {
     id: number;
 
     @Column({ type: "uuid", nullable: false })
-    user_uuid: string;
+    customer_uuid: string;
 
     @Column({ type: "enum", enum: OrderPaymentStatusEnum, default: OrderPaymentStatusEnum.PENDING, nullable: false })
     payment_status: OrderPaymentStatusEnum;
@@ -25,7 +25,7 @@ export class OrderEntity {
     total_price: number;
 
     @ManyToOne(() => UserEntity, (user) => user.orders)
-    @JoinColumn({ name: "user_uuid" })
+    @JoinColumn({ name: "customer_uuid" })
     user: UserEntity;
 
     @CreateDateColumn()

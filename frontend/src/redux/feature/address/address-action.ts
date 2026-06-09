@@ -4,7 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { AddAddressPayload, UpdateAddressPayload, DeleteAddressPayload, AddressResponse } from "./address-type";
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const getAddresses = createAsyncThunk<
     AddressResponse,
@@ -13,7 +13,7 @@ export const getAddresses = createAsyncThunk<
 >("address/getAddresses", async (_, { getState, rejectWithValue }) => {
     try {
         const token = getState().authReducer.token || "";
-        const res = await fetch(`${API_URL}/api/v1/user/address`, {
+        const res = await fetch(`${BACKEND_URL}/api/v1/user/address`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export const addAddress = createAsyncThunk<
 >("address/addAddress", async (payload, { getState, rejectWithValue }) => {
     try {
         const token = getState().authReducer.token || "";
-        const res = await fetch(`${API_URL}/api/v1/user/address`, {
+        const res = await fetch(`${BACKEND_URL}/api/v1/user/address`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -60,7 +60,7 @@ export const deleteAddress = createAsyncThunk<
 >("address/deleteAddress", async (payload, { getState, rejectWithValue }) => {
     try {
         const token = getState().authReducer.token || "";
-        const res = await fetch(`${API_URL}/api/v1/user/address/${payload.uuid}`, {
+        const res = await fetch(`${BACKEND_URL}/api/v1/user/address/${payload.uuid}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

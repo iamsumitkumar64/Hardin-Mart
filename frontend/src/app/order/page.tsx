@@ -16,9 +16,8 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks.ts";
-import { payOrder } from "@/redux/feature/wallet/wallet-action";
-import { clearOrderState } from "@/redux/feature/order/order-slice";
 import Razorpay from 'razorpay';
+import { clearOrderState } from "@/redux/feature/order/order-slice";
 
 export default function OrderPage() {
     const dispatch = useAppDispatch();
@@ -29,19 +28,18 @@ export default function OrderPage() {
     const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
-        // Clear old data and load fresh from offset 0
-        dispatch(clearOrderState());
+        // if (!saleOrders?.length) {
+        clearOrderState();
+        fetchOrders();
         setOffset(0);
-        setHasMore(true);
-        fetchOrders(0);
+        // }
     }, []);
 
-    const fetchOrders = async (currentOffset: number) => {
+    const fetchOrders = async () => {
         try {
-            // Single API call - materialized view has all data (newest first from backend)
-            const result = await dispatch(getShipmentOrdersMaterialized({ limit, offset: currentOffset })).unwrap();
+            const result = await dispatch(getShipmentOrdersMaterialized({ limit, offset: offset })).unwrap();
             const fetchedOrders = Array.isArray(result.data) ? result.data : [];
-            setOffset(currentOffset + limit);
+            setOffset(prevOffset => prevOffset + limit);
             if (fetchedOrders.length < limit) setHasMore(false);
         } catch (err: any) {
             console.log(err);
@@ -50,10 +48,12 @@ export default function OrderPage() {
     };
 
     const orderSteps = [
+        OrderStatusEnum.PENDING,
         OrderStatusEnum.PLACED,
         OrderStatusEnum.BILLED,
+        OrderStatusEnum.PAYMENT_FAILED,
         OrderStatusEnum.READY_TO_SHIP,
-        // OrderStatusEnum.CANCELLED,
+        OrderStatusEnum.CANCELLED,
     ];
 
     const getActiveStep = (status: OrderStatusEnum) => {
@@ -68,9 +68,10 @@ export default function OrderPage() {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
                 amount: razorOrder.data.amount,
                 currency: razorOrder.data.currency,
-                order_id: razorOrder.data.id,
+                order_id: razorOrder.data.id, // Order ID from backend
                 handler: (response: any) => {
-                    console.log(response);
+                    console.log(response); // Payment details
+                    // Send payment details to backend for verification
                     verifyPayment(order_uuid);
                 },
             };
@@ -85,7 +86,6 @@ export default function OrderPage() {
     // local webhook triggered
     const verifyPayment = async (order_uuid: string) => {
         try {
-            await dispatch(payOrder({ order_uuid })).unwrap();
         } catch (err: any) {
             enqueueSnackbar(err, { variant: "warning" });
         }
@@ -106,7 +106,7 @@ export default function OrderPage() {
             <Box id="scrollableDiv" className={styles.scrollWrapper}>
                 <InfiniteScroll
                     dataLength={shipmentOrdersMaterialized ? shipmentOrdersMaterialized.length : 0}
-                    next={() => fetchOrders(offset)}
+                    next={fetchOrders}
                     hasMore={hasMore}
                     loader={<Box className={styles.loader}><CircularProgress /></Box>}
                     endMessage={<Typography className={styles.endMessage}>Yay! You have seen it all</Typography>}
@@ -118,17 +118,18 @@ export default function OrderPage() {
                             return (
                                 <Card key={order.uuid} className={styles.orderCard}>
 
-                                    <Stepper activeStep={getActiveStep((order.order_status || OrderStatusEnum.PLACED) as OrderStatusEnum)} alternativeLabel className={styles.stepper}>
+                                    <Stepper activeStep={getActiveStep((order.order_status || OrderStatusEnum.PENDING) as OrderStatusEnum)} alternativeLabel className={styles.stepper}>
                                         {orderSteps.map((step) => (
                                             <Step
                                                 key={step}
-                                                completed={
-                                                    order.order_status === OrderStatusEnum.READY_TO_SHIP
-                                                        ? true
-                                                        : undefined
-                                                }
+                                            // completed={
+                                            //     order.order_status === OrderStatusEnum.READY_TO_SHIP
+                                            //         ? true
+                                            //         : undefined
+                                            // }
                                             >
                                                 <StepLabel
+                                                    // error={billingOrder?.payment_status === OrderPaymentStatusEnum.REFUND && order.returned_from_status === step}
                                                     sx={{
                                                         "& .MuiStepLabel-label": {
                                                             textTransform: "capitalize",
@@ -154,6 +155,16 @@ export default function OrderPage() {
                                         <Typography variant="h6">
                                             Total Price: {order.total_price}
                                         </Typography>
+
+                                        {/* {
+                                            (
+                                                // billingOrder?.payment_status == OrderPaymentStatusEnum.PENDING ||
+                                                billingOrder?.payment_status == OrderPaymentStatusEnum.FAILED
+                                            ) &&
+                                            <Button onClick={() => handlePay(order.uuid)}>
+                                                Pay
+                                            </Button>
+                                        } */}
 
                                         <Box className={styles.slidercomp}>
                                             <Slider {...sliderSettings}>

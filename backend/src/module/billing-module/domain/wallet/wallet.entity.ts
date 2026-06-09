@@ -15,13 +15,13 @@ export class WalletEntity {
     id: number;
 
     @Column({ type: "uuid", nullable: false, unique: true })
-    user_uuid: string;
+    customer_uuid: string;
 
     @Column({ type: "float", default: 0 })
     balance: number;
 
     @OneToOne(() => UserEntity, (user) => user.wallet)
-    @JoinColumn({ name: "user_uuid" })
+    @JoinColumn({ name: "customer_uuid" })
     user: UserEntity;
 
     @CreateDateColumn()

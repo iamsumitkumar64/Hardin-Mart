@@ -12,9 +12,9 @@ export class WalletRepository extends Repository<WalletEntity> {
         super(WalletEntity, dataSource.createEntityManager());
     }
 
-    async findWallet(user_uuid: string) {
+    async findWallet(customer_uuid: string) {
         return await this.findOne({
-            where: { user_uuid },
+            where: { customer_uuid },
         });
     }
 
@@ -34,15 +34,15 @@ export class WalletRepository extends Repository<WalletEntity> {
         );
     }
 
-    async upsertWallet(user_uuid: string) {
+    async upsertWallet(customer_uuid: string) {
         await this.upsert(
             {
-                user_uuid,
+                customer_uuid,
             },
-            ["user_uuid"],
+            ["customer_uuid"],
         );
 
-        const wallet = await this.findWallet(user_uuid);
+        const wallet = await this.findWallet(customer_uuid);
         if (!wallet) {
             throw new Error("Wallet not found after upsert");
         }

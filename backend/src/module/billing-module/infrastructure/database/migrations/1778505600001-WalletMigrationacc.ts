@@ -10,7 +10,7 @@ export class WalletAccountMigration1778505600001 implements MigrationInterface {
                 columns: [
                     { name: "uuid", type: "uuid", isPrimary: true, generationStrategy: "uuid", default: "uuid_generate_v4()", },
                     { name: "id", type: "bigint", isGenerated: true, generationStrategy: "increment", isUnique: true, isNullable: false, },
-                    { name: "user_uuid", type: "uuid", isUnique: true, isNullable: false, },
+                    { name: "customer_uuid", type: "uuid", isUnique: true, isNullable: false, },
                     { name: "balance", type: "float", default: 0, },
                     { name: "created_at", type: "timestamp", default: "now()", },
                     { name: "updated_at", type: "timestamp", default: "now()", },
@@ -22,7 +22,7 @@ export class WalletAccountMigration1778505600001 implements MigrationInterface {
         await queryRunner.createForeignKey(
             "wallet",
             new TableForeignKey({
-                columnNames: ["user_uuid"],
+                columnNames: ["customer_uuid"],
                 referencedTableName: "user",
                 referencedColumnNames: ["uuid"],
                 name: "FK_wallet_user",

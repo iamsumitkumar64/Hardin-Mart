@@ -4,12 +4,16 @@ import { OrderRepository } from "src/module/sale-module/infrastructure/repositor
 import { OrderItemRepository } from "src/module/sale-module/infrastructure/repository/order.item.repository";
 import { Transactional } from "typeorm-transactional";
 import type { Request } from "express";
+import { OutboxRepository } from "src/module/sale-module/infrastructure/repository/outbox.repository";
+import { ExchangeNameEnum, RoutingKeyEnum } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
+import { OrderStatusEnum } from "src/module/sale-module/domain/order/order.enum";
 
 @Injectable()
 export class CreateOrderService {
     constructor(
         private readonly orderRepository: OrderRepository,
         private readonly orderItemRepository: OrderItemRepository,
+        private readonly outboxRepository: OutboxRepository,
     ) { }
 
     @Transactional({
@@ -21,7 +25,7 @@ export class CreateOrderService {
 
         const order = await this.orderRepository.createOrder(
             {
-                user_uuid: user.uuid,
+                customer_uuid: user.uuid,
                 total_price: body.total_price,
             }
         );
@@ -35,6 +39,18 @@ export class CreateOrderService {
             )
         );
         order.items = orderItems;
+
+        await this.orderRepository.updateOrderStatus(order.uuid, OrderStatusEnum.PLACED);
+
+        // create outbox entry
+        await this.outboxRepository.createOutboxEntry({
+            exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
+            routing_key: RoutingKeyEnum.ORDER_PLACED,
+            message_payload: {
+                order_uuid: order.uuid,
+                customer_uuid: order.customer_uuid,
+            },
+        });
 
         return {
             data: order

@@ -3,7 +3,6 @@ import { DataSource, Not, Repository } from "typeorm";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { OrderEntity } from "../../domain/order/order.entity";
 import { UserEntity } from "../../domain/user/user.entity";
-import { OrderStatusEnum } from "../../domain/order/order.enum";
 import { OrderListingViewEntity } from "../../domain/order/order-listing.view.entity";
 
 @Injectable()
@@ -22,7 +21,7 @@ export class OrderRepository extends Repository<OrderEntity> {
 
     async getOrderListing(user: UserEntity, offset?: number, limit?: number) {
         const [data, total] = await this.findAndCount({
-            where: { user_uuid: user.uuid },
+            where: { customer_uuid: user.uuid },
             relations: {
                 address: true,
             },
@@ -36,27 +35,20 @@ export class OrderRepository extends Repository<OrderEntity> {
         return { data, total };
     }
 
-    async updateOrderStatus(uuid: string, status: OrderStatusEnum) {
-        const shipmentSchema = process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema';
-        const orderView = process.env.DB_POSTGRES_ORDER_VIEW || "order_listing_mv";
-
-        await this.dataSource.query(`REFRESH MATERIALIZED VIEW CONCURRENTLY ${shipmentSchema}.${orderView}`);
-
+    async updateOrder(uuid: string, where: Partial<OrderEntity>) {
         return await this.update(
             {
-                uuid: uuid
+                uuid: uuid,
             },
-            {
-                order_status: status
-            }
+            where
         )
     }
 
-    async findByUserUuidAndOrderUuid(user_uuid: string, order_uuid: string) {
+    async findByUserUuidAndOrderUuid(customer_uuid: string, order_uuid: string) {
         const user = await this.findOne({
             where: {
                 uuid: order_uuid,
-                user_uuid: user_uuid
+                customer_uuid: customer_uuid
             },
             relations: {
                 user: true,

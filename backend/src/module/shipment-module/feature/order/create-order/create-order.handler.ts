@@ -17,7 +17,7 @@ export class CreateOrderService {
     async handle(order: OrderCreatedMQEventPayload) {
         const shipmentOrder = await this.orderRepository.createOrder(
             {
-                user_uuid: order.user_uuid,
+                customer_uuid: order.customer_uuid,
                 uuid: order.order_uuid,
                 id: order.order_id,
                 created_at: order.created_at,

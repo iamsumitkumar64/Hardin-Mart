@@ -17,12 +17,12 @@ export class UserAddressRepository extends Repository<UserAddressEntity> {
         return await this.save(address);
     }
 
-    async findByUserUuid(user_uuid: string, is_default?: boolean) {
-        const criteria: any = { user_uuid };
+    async findByUserUuid(customer_uuid: string, is_default?: boolean) {
+        const criteria: any = { customer_uuid };
         if (typeof is_default === 'boolean') {
             criteria.isDefault = is_default;
         }
-        const addresses = await this.find({ where:criteria });
+        const addresses = await this.find({ where: criteria });
         return addresses;
     }
 
