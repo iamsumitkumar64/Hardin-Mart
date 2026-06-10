@@ -28,10 +28,12 @@ export default function OrderPage() {
     const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
+        // if (!saleOrders?.length) {
         dispatch(clearOrderState());
-        setOffset(0);
-        setHasMore(true);
         fetchOrders(0);
+        setHasMore(true);
+        setOffset(0);
+        // }
     }, []);
 
     const fetchOrders = async (currentOffset = offset) => {

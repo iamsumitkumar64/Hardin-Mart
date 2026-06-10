@@ -8,10 +8,10 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { DataSourceOptions } from 'typeorm';
 
 // Common Module
-import { BcryptService } from './module/common/infrastruture/services/bcrypt.service';
-import { RabbitMQModule } from './module/common/infrastruture/rabbit-mq/rabbit-mq.module';
-import { AuthenticateMiddleware } from './module/common/infrastruture/middleware/authenticate.middleware';
-import { createTransactionalDataSource } from './module/common/infrastruture/services/typeorm.transactional';
+import { BcryptService } from './common/infrastruture/services/bcrypt.service';
+import { RabbitMQModule } from './common/infrastruture/rabbit-mq/rabbit-mq.module';
+import { AuthenticateMiddleware } from './common/infrastruture/middleware/authenticate.middleware';
+import { createTransactionalDataSource } from './common/infrastruture/services/typeorm.transactional';
 
 // User Module
 import { userDataSource } from './module/user-module/infrastructure/database/data-source';

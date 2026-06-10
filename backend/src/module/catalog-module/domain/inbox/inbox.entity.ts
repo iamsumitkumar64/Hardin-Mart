@@ -13,6 +13,9 @@ export class InboxEntity {
     })
     id: number;
 
+    @Column({ type: "varchar", nullable: false, })
+    event_name: string;
+
     @Column({
         type: "uuid",
         unique: true,

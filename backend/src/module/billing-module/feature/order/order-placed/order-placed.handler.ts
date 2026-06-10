@@ -8,7 +8,7 @@ import { OrderRepository } from "src/module/billing-module/infrastructure/reposi
 import { OutboxRepository } from "src/module/billing-module/infrastructure/repository/outbox.repository";
 import { OrderPaymentStatusEnum } from "src/module/billing-module/domain/order/order.enum";
 import { WalletHistoryTypeEnum } from "src/module/billing-module/domain/wallet-history/wallet.enum";
-import { ExchangeNameEnum, RoutingKeyEnum, } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
+import { ExchangeNameEnum, RoutingKeyEnum, } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
 
 @Injectable()
 export class OrderPlacedService {
@@ -52,8 +52,9 @@ export class OrderPlacedService {
 
                 // create outbox entry
                 await this.outboxRepository.createOutboxEntry({
-                    exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
-                    routing_key: RoutingKeyEnum.ORDER_PAYMENT_FAILED,
+                    exchange_name: ExchangeNameEnum.BILLING_EXCHANGE,
+                    routing_key: RoutingKeyEnum.PAYMENT_FAILED,
+                    event_name: RoutingKeyEnum.PAYMENT_FAILED,
                     message_payload: {
                         order_uuid,
                         customer_uuid: customer_uuid,
@@ -83,8 +84,9 @@ export class OrderPlacedService {
 
             // create outbox entry
             await this.outboxRepository.createOutboxEntry({
-                exchange_name: ExchangeNameEnum.ORDER_EXCHANGE,
+                exchange_name: ExchangeNameEnum.BILLING_EXCHANGE,
                 routing_key: RoutingKeyEnum.ORDER_BILLED,
+                event_name: RoutingKeyEnum.ORDER_BILLED,
                 message_payload: {
                     order_uuid,
                     customer_uuid: customer_uuid,

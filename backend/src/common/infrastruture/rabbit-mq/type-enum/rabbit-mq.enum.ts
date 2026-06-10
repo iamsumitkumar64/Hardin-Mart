@@ -18,22 +18,29 @@ export enum RetryMechanismHeaderEnum {
 export enum ExchangeNameEnum {
     USER_EXCHANGE = 'user.exchange',
 
-    ORDER_EXCHANGE = 'order.exchange',
+    SALE_EXCHANGE = 'sale.exchange',
+
+    BILLING_EXCHANGE = 'billing.exchange',
+
+    SHIPPING_EXCHANGE = 'shipping.exchange',
 }
 
-// exchange name + routing key
+// routing key
 export enum RoutingKeyEnum {
+    // USER_EXCHANGE
     USER_REGISTERED = 'user.registered',
 
-    ORDER_BILLED = 'order.billed',
-
-    ORDER_REFUND = 'order.refund',
-
+    // SALE_EXCHANGE
     ORDER_PLACED = 'order.placed',
 
-    ORDER_SHIPPING_LABEL_CREATED = 'order.shipping.label.created',
+    // BILLING_EXCHANGE
+    ORDER_BILLED = 'order.billed',
+    ORDER_REFUND = 'order.refund',
+    PAYMENT_FAILED = 'payment.failed',
 
-    ORDER_PAYMENT_FAILED = 'order.payment.failed',
+    // SHIPPING_EXCHANGE
+    SHIPPING_LABEL_CREATED = 'shipping.label.created',
+    BACK_ORDERED = 'back.ordered',
 }
 
 // queue name (module name) + routing key + endfix(queue)
@@ -49,16 +56,18 @@ export enum QueueEnum {
     SALE_ORDER_BILLED_QUEUE = 'sale.order.billed.queue',
 
     // ORDER_REFUND Key
-    BILLING_ORDER_REFUND_QUEUE = 'billing.order.refund.queue',
     SALE_ORDER_REFUND_QUEUE = 'sale.order.refund.queue',
 
     // ORDER_PLACED Key
     BILLING_ORDER_PLACED_QUEUE = 'billing.order.placed.queue',
     SHIPMENT_ORDER_PLACED_QUEUE = 'shipment.order.placed.queue',
 
-    // ORDER_SHIPPING_LABEL_CREATED Key
-    SALE_ORDER_SHIPPING_LABEL_CREATED_QUEUE = 'sale.order.shipping.label.created.queue',
+    // SHIPPING_LABEL_CREATED Key
+    SALE_SHIPPING_LABEL_CREATED_QUEUE = 'sale.shipping.label.created.queue',
 
-    // ORDER_PAYMENT_FAILED
-    SALE_ORDER_PAYMENT_FAILED_QUEUE = 'sale.order.payment.failed.queue',
+    // BACK_ORDERED Key
+    BILLING_BACK_ORDERED_QUEUE = 'billing.back.ordered.queue',
+
+    // PAYMENT_FAILED
+    SALE_PAYMENT_FAILED_QUEUE = 'sale.payment.failed.queue',
 }

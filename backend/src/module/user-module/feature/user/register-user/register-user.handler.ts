@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { RegisterUserDto } from "./register-user.dto";
 import type { Request } from "express";
-import { RabbitMQService } from "src/module/common/infrastruture/rabbit-mq/rabbit-mq.service";
+import { RabbitMQService } from "src/common/infrastruture/rabbit-mq/rabbit-mq.service";
 import { UserRepository } from "src/module/user-module/infrastructure/repository/user.repository";
-import { BcryptService } from "src/module/common/infrastruture/services/bcrypt.service";
+import { BcryptService } from "src/common/infrastruture/services/bcrypt.service";
 import { JwtHelperService } from "src/module/user-module/infrastructure/services/jwt.service";
-import { ExchangeNameEnum, RoutingKeyEnum } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
+import { ExchangeNameEnum, RoutingKeyEnum } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
 import { OutboxRepository } from "src/module/user-module/infrastructure/repository/outbox.repository";
 import { Transactional } from "typeorm-transactional";
 
@@ -49,6 +49,7 @@ export class RegisterUserService {
         await this.outboxRepository.createOutboxEntry({
             exchange_name: ExchangeNameEnum.USER_EXCHANGE,
             routing_key: RoutingKeyEnum.USER_REGISTERED,
+            event_name: RoutingKeyEnum.USER_REGISTERED,
             message_payload: RegisteredUser,
         });
 

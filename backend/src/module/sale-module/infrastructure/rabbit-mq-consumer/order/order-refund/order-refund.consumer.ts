@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { RabbitMQService } from 'src/module/common/infrastruture/rabbit-mq/rabbit-mq.service';
-import { QueueEnum } from 'src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum';
-import { RabbitMQConsumerMessage, OrderRefundMQEventPayload } from 'src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type';
+import { RabbitMQService } from 'src/common/infrastruture/rabbit-mq/rabbit-mq.service';
+import { QueueEnum } from 'src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum';
+import { RabbitMQConsumerMessage, OrderRefundMQEventPayload } from 'src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type';
 import { InboxRepository } from '../../../repository/inbox.repository';
 import { OrderRefundService } from 'src/module/sale-module/feature/order/order-refund/order-refund.handler';
 
@@ -19,7 +19,7 @@ export class OrderRefundConsumer implements OnModuleInit {
         await this.rabbitMQService.consumeMessages<RabbitMQConsumerMessage<OrderRefundMQEventPayload>>(
             QueueEnum.SALE_ORDER_REFUND_QUEUE,
             async (data) => {
-                const { outbox_uuid, payload } = data;
+                const { outbox_uuid, payload, event_name } = data;
 
                 this.logger.log(`Processing order refund: ${payload.order_uuid} \n ${JSON.stringify(payload)}`);
 
@@ -31,7 +31,7 @@ export class OrderRefundConsumer implements OnModuleInit {
 
                 await this.orderRefundService.handle(payload);
 
-                await this.inboxRepository.createEntry({ outbox_uuid });
+                await this.inboxRepository.createEntry({ outbox_uuid, event_name });
             },
         );
     }

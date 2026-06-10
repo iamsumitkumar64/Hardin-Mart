@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, } from "@nestjs/common";
-import type { UserRegisteredMQEventPayload } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
+import type { UserRegisteredMQEventPayload } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 import { UserRepository } from "src/module/shipment-module/infrastructure/repository/user.repository";
 import { Transactional } from "typeorm-transactional";
 

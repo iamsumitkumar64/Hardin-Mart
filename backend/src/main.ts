@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { AllExceptionsFilter } from './module/common/infrastruture/filters/all-exceptions.filter';
-import { createSchemas } from './module/common/infrastruture/db/bootstrap/db_schema.create';
+import { AllExceptionsFilter } from './common/infrastruture/filters/all-exceptions.filter';
+import { createSchemas } from './common/infrastruture/db/bootstrap/db_schema.create';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 
 async function bootstrap() {

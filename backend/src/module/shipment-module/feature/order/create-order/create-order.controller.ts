@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { CreateOrderService } from "./create-order.handler";
-import type { OrderCreatedMQEventPayload } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
+import type { OrderCreatedMQEventPayload } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 
 @Controller()
 export class CreateOrderController {

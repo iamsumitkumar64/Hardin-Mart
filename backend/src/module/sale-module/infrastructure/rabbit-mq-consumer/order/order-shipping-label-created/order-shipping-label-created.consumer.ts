@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { RabbitMQService } from 'src/module/common/infrastruture/rabbit-mq/rabbit-mq.service';
-import { ExchangeNameEnum, ExchangeTypeEnum, QueueEnum, RoutingKeyEnum } from 'src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum';
-import { RabbitMQConsumerMessage, OrderShippingLabelCreatedMQEventPayload } from 'src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type';
+import { RabbitMQService } from 'src/common/infrastruture/rabbit-mq/rabbit-mq.service';
+import { ExchangeNameEnum, ExchangeTypeEnum, QueueEnum, RoutingKeyEnum } from 'src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum';
+import { RabbitMQConsumerMessage, OrderShippingLabelCreatedMQEventPayload } from 'src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type';
 import { InboxRepository } from '../../../repository/inbox.repository';
 import { OrderShippingLabelCreatedService } from 'src/module/sale-module/feature/order/order-shipping-label-created/order-shipping-label-created.handler';
 
@@ -17,9 +17,9 @@ export class OrderShippingLabelCreatedConsumer implements OnModuleInit {
 
     async onModuleInit() {
         await this.rabbitMQService.consumeMessages<RabbitMQConsumerMessage<OrderShippingLabelCreatedMQEventPayload>>(
-            QueueEnum.SALE_ORDER_SHIPPING_LABEL_CREATED_QUEUE,
+            QueueEnum.SALE_SHIPPING_LABEL_CREATED_QUEUE,
             async (data) => {
-                const { outbox_uuid, payload } = data;
+                const { outbox_uuid, payload, event_name } = data;
 
                 this.logger.log(`Processing shipping label created: ${payload.order_uuid} \n ${JSON.stringify(payload)}`);
 
@@ -31,7 +31,7 @@ export class OrderShippingLabelCreatedConsumer implements OnModuleInit {
 
                 await this.orderShippingLabelCreatedService.handle(payload);
 
-                await this.inboxRepository.createEntry({ outbox_uuid });
+                await this.inboxRepository.createEntry({ outbox_uuid, event_name });
             },
         );
     }

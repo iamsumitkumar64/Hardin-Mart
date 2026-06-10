@@ -10,6 +10,7 @@ export class InboxMigration1778505599998 implements MigrationInterface {
                 columns: [
                     { name: "uuid", type: "uuid", isPrimary: true, generationStrategy: "uuid", default: "uuid_generate_v4()", },
                     { name: "id", type: "bigint", isGenerated: true, generationStrategy: "increment", isUnique: true, isNullable: false, },
+                    { name: "event_name", type: "varchar", isNullable: false, },
                     { name: "outbox_uuid", type: "uuid", isUnique: true, isNullable: false, },
                     { name: "created_at", type: "timestamp", default: "now()", },
                     { name: "updated_at", type: "timestamp", default: "now()", },

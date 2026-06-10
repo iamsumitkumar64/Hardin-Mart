@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { OrderPlacedMQEventPayload, } from "src/module/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
+import type { OrderPlacedMQEventPayload, } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 import { OrderRepository } from "src/module/shipment-module/infrastructure/repository/order.repository";
 import { runOnTransactionCommit, Transactional } from "typeorm-transactional";
 

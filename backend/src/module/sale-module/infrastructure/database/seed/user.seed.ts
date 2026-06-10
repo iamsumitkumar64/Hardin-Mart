@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { saleDataSource, options } from '../data-source';
-import { BcryptService } from '../../../../common/infrastruture/services/bcrypt.service';
+import { BcryptService } from '../../../../../common/infrastruture/services/bcrypt.service';
 import { UserEntity } from '../../../domain/user/user.entity';
 
 // hardcoded users for all microservices

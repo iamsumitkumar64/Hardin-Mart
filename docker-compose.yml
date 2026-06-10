@@ -1,4 +1,4 @@
-name: "e-commerce"
+name: "hardin-mart"
 
 services:
   rabbitmq:
@@ -17,7 +17,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     networks:
-      - ecommerce_network
+      - hardin_mart_network
 
   frontend:
     build:
@@ -25,13 +25,13 @@ services:
       dockerfile: dockerfile
     ports:
       - "3000:3000"
-    command: npm run dev
+    command: sh -c "npm run build && npm run dev"
     env_file: ./frontend/.env
     volumes:
       - ./frontend:/app
       - /app/node_modules 
     networks:
-      - ecommerce_network
+      - hardin_mart_network
 
   pgadmin:
     image: dpage/pgadmin4:9.8
@@ -44,7 +44,7 @@ services:
     volumes:
       - backend_pgadmin_data:/var/lib/pgadmin
     networks:
-      - ecommerce_network
+      - hardin_mart_network
 
   database:
     image: postgres:16
@@ -56,7 +56,7 @@ services:
     volumes:
       - backend_postgres_data:/var/lib/postgresql/data
     networks:
-      - ecommerce_network
+      - hardin_mart_network
 
   backend:
     build:
@@ -73,12 +73,12 @@ services:
       - ./backend:/app
       - /app/node_modules  
     networks:
-      - ecommerce_network
+      - hardin_mart_network
 
 volumes:
   backend_postgres_data: {}
   backend_pgadmin_data: {}
 
 networks:
-  ecommerce_network:
+  hardin_mart_network:
     driver: bridge
