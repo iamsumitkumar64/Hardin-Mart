@@ -5,11 +5,12 @@ import { OrderItemRepository } from "src/module/sale-module/infrastructure/repos
 import { Transactional } from "typeorm-transactional";
 import type { Request } from "express";
 import { OutboxRepository } from "src/module/sale-module/infrastructure/repository/outbox.repository";
-import { ExchangeNameEnum, RoutingKeyEnum } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
 import { OrderStatusEnum } from "src/module/sale-module/domain/order/order.enum";
 
 @Injectable()
 export class CreateOrderService {
+    private readonly SALE_EXCHANGE = 'sale.exchange';
+
     constructor(
         private readonly orderRepository: OrderRepository,
         private readonly orderItemRepository: OrderItemRepository,
@@ -42,11 +43,11 @@ export class CreateOrderService {
 
         await this.orderRepository.updateOrderStatus(order.uuid, OrderStatusEnum.PLACED);
 
-        // create outbox entry
+        // create outbox entry (fanout - no routing key)
         await this.outboxRepository.createOutboxEntry({
-            exchange_name: ExchangeNameEnum.SALE_EXCHANGE,
-            routing_key: RoutingKeyEnum.ORDER_PLACED,
-            event_name: RoutingKeyEnum.ORDER_PLACED,
+            exchange_name: this.SALE_EXCHANGE,
+            routing_key: null,
+            event_name: 'order.placed',
             message_payload: {
                 order_uuid: order.uuid,
                 customer_uuid: order.customer_uuid,

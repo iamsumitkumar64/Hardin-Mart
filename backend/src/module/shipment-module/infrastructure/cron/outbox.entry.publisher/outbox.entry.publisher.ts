@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { RabbitMQService } from 'src/common/infrastruture/rabbit-mq/rabbit-mq.service';
+import { RabbitMQService } from 'src/module/shipment-module/infrastructure/rabbit-mq/rabbit-mq.service';
 import { OutboxRepository } from '../../repository/outbox.repository';
 import { OutboxStatusEnum } from 'src/module/shipment-module/domain/outbox/outbox.enum';
 
@@ -22,10 +22,9 @@ export class OutboxEntryPublisherCronService {
         await Promise.all(
             pendingEntries.map(async (entry) => {
                 try {
-                    //push to mq
+                    //push to mq - fanout, so no routing key needed
                     await this.rabbitMQService.publishToExchange(
                         entry.exchange_name,
-                        entry.routing_key,
                         {
                             outbox_uuid: entry.uuid,
                             event_name: entry.event_name,

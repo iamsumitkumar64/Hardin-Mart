@@ -8,10 +8,11 @@ import { OrderRepository } from "src/module/billing-module/infrastructure/reposi
 import { OutboxRepository } from "src/module/billing-module/infrastructure/repository/outbox.repository";
 import { OrderPaymentStatusEnum } from "src/module/billing-module/domain/order/order.enum";
 import { WalletHistoryTypeEnum } from "src/module/billing-module/domain/wallet-history/wallet.enum";
-import { ExchangeNameEnum, RoutingKeyEnum, } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
 
 @Injectable()
 export class OrderPlacedService {
+    private readonly BILLING_EXCHANGE = 'billing.exchange';
+
     constructor(
         private readonly walletRepository: WalletRepository,
         private readonly walletHistoryRepository: WalletHistoryRepository,
@@ -50,11 +51,11 @@ export class OrderPlacedService {
 
                 // throw new BadRequestException("Balance is low . Please do add amount");
 
-                // create outbox entry
+                // create outbox entry (fanout - no routing key)
                 await this.outboxRepository.createOutboxEntry({
-                    exchange_name: ExchangeNameEnum.BILLING_EXCHANGE,
-                    routing_key: RoutingKeyEnum.PAYMENT_FAILED,
-                    event_name: RoutingKeyEnum.PAYMENT_FAILED,
+                    exchange_name: this.BILLING_EXCHANGE,
+                    routing_key: null,
+                    event_name: 'payment.failed',
                     message_payload: {
                         order_uuid,
                         customer_uuid: customer_uuid,
@@ -82,11 +83,11 @@ export class OrderPlacedService {
                 description: `Paid for order '${order.uuid}'`,
             });
 
-            // create outbox entry
+            // create outbox entry (fanout - no routing key)
             await this.outboxRepository.createOutboxEntry({
-                exchange_name: ExchangeNameEnum.BILLING_EXCHANGE,
-                routing_key: RoutingKeyEnum.ORDER_BILLED,
-                event_name: RoutingKeyEnum.ORDER_BILLED,
+                exchange_name: this.BILLING_EXCHANGE,
+                routing_key: null,
+                event_name: 'order.billed',
                 message_payload: {
                     order_uuid,
                     customer_uuid: customer_uuid,
