@@ -6,6 +6,7 @@ import { Transactional } from "typeorm-transactional";
 import type { Request } from "express";
 import { OutboxRepository } from "src/module/sale-module/infrastructure/repository/outbox.repository";
 import { OrderStatusEnum } from "src/module/sale-module/domain/order/order.enum";
+import { OrderPublishEventEnum } from "src/module/sale-module/domain/order/order.event";
 
 @Injectable()
 export class CreateOrderService {
@@ -43,11 +44,9 @@ export class CreateOrderService {
 
         await this.orderRepository.updateOrderStatus(order.uuid, OrderStatusEnum.PLACED);
 
-        // create outbox entry (fanout - no routing key)
         await this.outboxRepository.createOutboxEntry({
             exchange_name: this.SALE_EXCHANGE,
-            routing_key: null,
-            event_name: 'order.placed',
+            event_name: OrderPublishEventEnum.ORDER_PLACED,
             message_payload: {
                 order_uuid: order.uuid,
                 customer_uuid: order.customer_uuid,

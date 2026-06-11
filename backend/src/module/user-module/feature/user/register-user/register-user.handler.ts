@@ -6,6 +6,7 @@ import { BcryptService } from "src/common/infrastruture/services/bcrypt.service"
 import { JwtHelperService } from "src/module/user-module/infrastructure/services/jwt.service";
 import { OutboxRepository } from "src/module/user-module/infrastructure/repository/outbox.repository";
 import { Transactional } from "typeorm-transactional";
+import { UserPublishEventEnum } from "src/module/user-module/domain/user/user.event";
 
 @Injectable()
 export class RegisterUserService {
@@ -37,11 +38,18 @@ export class RegisterUserService {
         // generate token for accessing resources
         const token = await this.jwtHelperService.generateJwtToken(RegisteredUser);
 
-        // make entry of publish exchange (fanout - no routing key)
+        // not publish direct to mq-queue
+        // await this.rabbitMQService.publishToExchange(
+        //     ExchangeNameEnum.USER_EXCHANGE,
+        //     RoutingKeyEnum.USER_REGISTERED,
+        //     RegisteredUser,
+        // );
+
+        // make entry of publish exchange
         await this.outboxRepository.createOutboxEntry({
             exchange_name: this.USER_EXCHANGE,
-            routing_key: null,
-            event_name: 'user.registered',
+            routing_key: '',
+            event_name: UserPublishEventEnum.USER_REGISTERED,
             message_payload: RegisteredUser,
         });
 

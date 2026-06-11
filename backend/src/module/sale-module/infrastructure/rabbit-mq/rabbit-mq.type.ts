@@ -1,16 +1,3 @@
-export type ExchangeType = | 'direct' | 'fanout' | 'topic' | 'headers';
-
-export interface PublishHeadersInterface {
-    'x-match'?: 'all' | 'any';
-    [key: string]: any;
-}
-
-export interface RabbitMQConsumerMessage<TPayload = unknown> {
-    outbox_uuid: string;
-    payload: TPayload;
-    event_name: string;
-}
-
 // Payload Types for Sale Module
 export interface UserRegisteredMQEventPayload {
     uuid: string;
@@ -42,18 +29,22 @@ export interface OrderShippingLabelCreatedMQEventPayload {
     customer_uuid: string;
 }
 
-// Event Payload Discriminated Union
-export type SaleEventPayload =
-    | UserRegisteredMQEventPayload
-    | OrderBilledMQEventPayload
-    | OrderRefundMQEventPayload
-    | OrderPaymentFailedMQEventPayload
-    | OrderShippingLabelCreatedMQEventPayload;
-
-export const saleEventPayloadMap: Record<string, any> = {
+export type SaleEventPayloadMap = {
     'user.registered': UserRegisteredMQEventPayload,
     'order.billed': OrderBilledMQEventPayload,
     'order.refund': OrderRefundMQEventPayload,
     'payment.failed': OrderPaymentFailedMQEventPayload,
     'shipping.label.created': OrderShippingLabelCreatedMQEventPayload,
+};
+
+// Generic union type
+export type SaleEventPayload = SaleEventPayloadMap[keyof SaleEventPayloadMap];
+
+// 1. Define the Handler Function Type
+export type EventHandlerFunction<T extends keyof SaleEventPayloadMap> = 
+    (payload: SaleEventPayloadMap[T]) => Promise<void>;
+
+// 2. Map of exact handler signatures
+export type SaleEventHandlerMap = {
+    [K in keyof SaleEventPayloadMap]: EventHandlerFunction<K>[];
 };

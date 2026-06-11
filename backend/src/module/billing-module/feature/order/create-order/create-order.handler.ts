@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import type { OrderCreatedMQEventPayload } from "src/module/billing-module/infrastructure/rabbit-mq/rabbit-mq.type";
 import { OrderRepository } from "src/module/billing-module/infrastructure/repository/order.repository";
-import type { OrderCreatedMQEventPayload } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 import { runOnTransactionCommit, Transactional } from "typeorm-transactional";
 
 @Injectable()

@@ -1,16 +1,3 @@
-export type ExchangeType = | 'direct' | 'fanout' | 'topic' | 'headers';
-
-export interface PublishHeadersInterface {
-    'x-match'?: 'all' | 'any';
-    [key: string]: any;
-}
-
-export interface RabbitMQConsumerMessage<TPayload = unknown> {
-    outbox_uuid: string;
-    payload: TPayload;
-    event_name: string;
-}
-
 // Payload Types for Shipment Module
 export interface UserRegisteredMQEventPayload {
     uuid: string;
@@ -31,14 +18,37 @@ export interface OrderBilledMQEventPayload {
     customer_uuid: string;
 }
 
-// Event Payload Discriminated Union
-export type ShipmentEventPayload =
-    | UserRegisteredMQEventPayload
-    | OrderPlacedMQEventPayload
-    | OrderBilledMQEventPayload;
+export interface OrderCreatedMQEventPayload {
+    order_id: number;
+    order_uuid: string;
+    customer_uuid: string;
+    total_price: number;
+    address_uuid: string;
+    items: {
+        id: number;
+        uuid: string;
+        product_uuid: string;
+        quantity: number;
+        created_at: Date;
+    }[];
+    created_at: Date;
+}
 
-export const shipmentEventPayloadMap: Record<string, any> = {
-    'user.registered': UserRegisteredMQEventPayload,
-    'order.placed': OrderPlacedMQEventPayload,
-    'order.billed': OrderBilledMQEventPayload,
+// Map types
+export type ShipmentEventPayloadMap = {
+    'user.registered': UserRegisteredMQEventPayload;
+    'order.placed': OrderPlacedMQEventPayload;
+    'order.billed': OrderBilledMQEventPayload;
+};
+
+// Generic union type
+export type ShipmentEventPayload = ShipmentEventPayloadMap[keyof ShipmentEventPayloadMap];
+
+// 1. Define the Handler Function Type
+export type EventHandlerFunction<T extends keyof ShipmentEventPayloadMap> =
+    (payload: ShipmentEventPayloadMap[T]) => Promise<void>;
+
+// 2. Map of exact handler signatures
+export type ShipmentEventHandlerMap = {
+    [K in keyof ShipmentEventPayloadMap]: EventHandlerFunction<K>[];
 };

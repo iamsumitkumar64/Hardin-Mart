@@ -46,6 +46,9 @@ export default function AddAmountModal({ open, onClose }: Props) {
                         fullWidth
                         label="Amount"
                         type="number"
+                        slotProps={{
+                            htmlInput: { step: 'any' }
+                        }}
                         margin="normal"
                         {...register("amount")}
                         error={!!errors.amount}

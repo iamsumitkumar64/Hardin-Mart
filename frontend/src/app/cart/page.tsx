@@ -86,7 +86,7 @@ export default function CartPage() {
         try {
             await dispatch(getAddresses()).unwrap();
         } catch (err: any) {
-            console.error("Error fetching addresses:", err);
+            console.log("Error fetching addresses:", err);
         }
     };
 
@@ -168,7 +168,7 @@ export default function CartPage() {
                                         </Typography>
 
                                         <Typography className={styles.price}>
-                                            Price: ₹ {Number(price) * item.quantity}
+                                            Price: ₹ {(Number(price) * item.quantity)?.toFixed(2)}
                                         </Typography>
 
                                         <Typography className={styles.stock}>
@@ -226,7 +226,7 @@ export default function CartPage() {
                             const product = products.find((product) => product.uuid === item.product_uuid);
                             const saleProduct = saleProducts.find((product) => product.uuid === item.product_uuid);
                             return total + (Number(product?.price || item.product?.price || saleProduct?.price || 0) * item.quantity);
-                        }, 0)
+                        }, 0)?.toFixed(2)
                     }
                 </Typography>
             </Box>

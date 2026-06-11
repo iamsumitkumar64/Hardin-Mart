@@ -68,7 +68,7 @@ export async function PATCH(request: Request) {
 
         return NextResponse.json({ message: "Order Placed Success", data: result }, { status: 200 });
     } catch (error: any) {
-        console.error("API Error:", error);
+        console.log("API Error:", error);
         return NextResponse.json(
             { error: "Internal Server Error", details: error.message },
             { status: 500 }

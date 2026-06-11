@@ -38,7 +38,7 @@ export default function LoginForm() {
             router.replace("/")
         } catch (error) {
             enqueueSnackbar(String(error || "Something wrong"), { variant: "error" });
-            console.error(error)
+            console.log(error)
         }
     }
 

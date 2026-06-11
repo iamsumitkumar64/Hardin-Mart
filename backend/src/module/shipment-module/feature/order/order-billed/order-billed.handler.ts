@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { OrderRepository } from "src/module/shipment-module/infrastructure/repository/order.repository";
-import type { OrderBilledMQEventPayload } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 import { OrderStatusEnum } from "src/module/sale-module/domain/order/order.enum";
 import { ProductRepository } from "src/module/shipment-module/infrastructure/repository/product.repository";
 import { OutboxRepository } from "src/module/shipment-module/infrastructure/repository/outbox.repository";
 import { runOnTransactionCommit, Transactional } from "typeorm-transactional";
+import type { OrderBilledMQEventPayload } from "src/module/shipment-module/infrastructure/rabbit-mq/rabbit-mq.type";
+import { ShippingPolicyService } from "src/module/shipment-module/infrastructure/policy/shipping/shipping.policy.service";
+import { OrderPublishEventEnum } from "src/module/shipment-module/domain/order/order.event";
 
 @Injectable()
 export class OrderBilledService {
@@ -14,6 +16,7 @@ export class OrderBilledService {
         private readonly orderRepository: OrderRepository,
         private readonly productRepository: ProductRepository,
         private readonly outboxRepository: OutboxRepository,
+        private readonly shippingPolicyService: ShippingPolicyService,
     ) { }
 
     @Transactional({
@@ -40,8 +43,7 @@ export class OrderBilledService {
         } else {
             await this.outboxRepository.createOutboxEntry({
                 exchange_name: this.SHIPPING_EXCHANGE,
-                routing_key: null,
-                event_name: 'back.ordered',
+                event_name: OrderPublishEventEnum.BACK_ORDER,
                 message_payload: {
                     order_uuid: order.order_uuid,
                     customer_uuid: order.customer_uuid,
@@ -50,15 +52,7 @@ export class OrderBilledService {
             return;
         }
 
-        await this.outboxRepository.createOutboxEntry({
-            exchange_name: this.SHIPPING_EXCHANGE,
-            routing_key: null,
-            event_name: 'shipping.label.created',
-            message_payload: {
-                order_uuid: order.order_uuid,
-                customer_uuid: order.customer_uuid,
-            },
-        });
+        await this.shippingPolicyService.handleSetPolicy(order.order_uuid, { is_billed: true, is_placed: orderData.is_placed, data: order });
 
         return;
     }

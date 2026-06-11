@@ -2,15 +2,17 @@ import { Injectable } from "@nestjs/common";
 import { OrderRepository } from "src/module/billing-module/infrastructure/repository/order.repository";
 import { OrderPaymentStatusEnum } from "src/module/billing-module/domain/order/order.enum";
 import { WalletHistoryTypeEnum } from "src/module/billing-module/domain/wallet-history/wallet.enum";
-import type { OrderRefundMQEventPayload } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.type";
 import { runOnTransactionCommit, Transactional } from "typeorm-transactional";
 import { WalletRepository } from "src/module/billing-module/infrastructure/repository/wallet.repository";
 import { WalletHistoryRepository } from "src/module/billing-module/infrastructure/repository/wallet.history.repository";
-import { ExchangeNameEnum, RoutingKeyEnum } from "src/common/infrastruture/rabbit-mq/type-enum/rabbit-mq.enum";
 import { OutboxRepository } from "src/module/billing-module/infrastructure/repository/outbox.repository";
+import type { OrderRefundMQEventPayload } from "src/module/billing-module/infrastructure/rabbit-mq/rabbit-mq.type";
+import { OrderPublishEventEnum } from "src/module/billing-module/domain/order/order.event";
 
 @Injectable()
 export class OrderRefundService {
+    private readonly BILLING_EXCHANGE = 'billing.exchange';
+
     constructor(
         private readonly orderRepository: OrderRepository,
         private readonly walletRepository: WalletRepository,
@@ -48,9 +50,8 @@ export class OrderRefundService {
         });
 
         await this.outboxRepository.createOutboxEntry({
-            exchange_name: ExchangeNameEnum.BILLING_EXCHANGE,
-            routing_key: RoutingKeyEnum.ORDER_REFUND,
-            event_name: RoutingKeyEnum.ORDER_REFUND,
+            exchange_name: this.BILLING_EXCHANGE,
+            event_name: OrderPublishEventEnum.ORDER_REFUND,
             message_payload: {
                 order_uuid: order.order_uuid,
                 customer_uuid: order.customer_uuid,
