@@ -124,7 +124,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     ) {
         try {
             while (!this.channel) {
-                this.logger.debug('Waiting for RabbitMQ channel...');
+                this.logger.warn('Waiting for RabbitMQ channel...');
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
 
@@ -225,9 +225,9 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
                 },
             });
 
-            this.logger.log(`Sent => exchange = ${exchange} | key = ${routingKey}`);
+            this.logger.debug(`MQ Event Published => exchange = ${exchange} | key = ${routingKey}`);
         } catch (error) {
-            this.logger.error("Send error:", error);
+            this.logger.error("MQ Event Publish Error =>", error);
         }
     }
 

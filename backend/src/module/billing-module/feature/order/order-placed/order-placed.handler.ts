@@ -40,7 +40,8 @@ export class OrderPlacedService {
             }
 
             if (order.payment_status === OrderPaymentStatusEnum.PAID || order.payment_status === OrderPaymentStatusEnum.REFUND) {
-                throw new BadRequestException("Order payment can't able to process now");
+                console.log("Order payment can't able to process now");
+                return;
             }
 
             if (wallet.balance < order.total_price) {

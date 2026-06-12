@@ -5,12 +5,16 @@ import { PolicyClass } from "src/common/infrastruture/policy/policy.abstract";
 import { OrderPublishEventEnum } from "src/module/shipment-module/domain/order/order.event";
 
 @Injectable()
-export class ShippingPolicyService extends PolicyClass {
+export class ShippingPolicyService implements PolicyClass {
+    protected policyMap = new Map<string, any>();
+    protected readonly SHIPPING_EXCHANGE = 'shipping.exchange';
+    protected readonly BILLING_EXCHANGE = 'billing.exchange';
+    protected readonly USER_EXCHANGE = 'user.exchange';
+    protected readonly SALE_EXCHANGE = 'sale.exchange';
+
     constructor(
         private readonly outboxRepository: OutboxRepository,
-    ) {
-        super();
-    }
+    ) { }
 
     async handleSetPolicy(key: string, policy: ShippingPolicyType) {
         this.policyMap.set(key, policy);
