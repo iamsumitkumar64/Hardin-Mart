@@ -1,23 +1,67 @@
-import { Injectable } from "@nestjs/common";
-import { ExchangeTypeEnum } from "../../../../common/infrastruture/rabbit-mq/rabbit-mq.type";
-import { RabbitMQAbstractService } from "../../../../common/infrastruture/rabbit-mq/rabbit-mq.abstract.service";
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from "@nestjs/common";
+import { RabbitMQService as CommonRabbitMQService } from "../../../../common/infrastruture/rabbit-mq/rabbit-mq.service";
+import { billingRabbitMQConfig } from "./rabbit-mq.config";
+import { RabbitMQConsumerMessage } from "../../../../common/infrastruture/rabbit-mq/rabbit-mq.type";
+import { Channel } from "amqplib";
 
 @Injectable()
-export class RabbitMQService extends RabbitMQAbstractService {
-    protected readonly queueName = 'billing.queue';
+export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
+    private channel?: Channel;
+    private readonly logger = new Logger(RabbitMQService.name);
 
-    private readonly USER_EXCHANGE = 'user.exchange';
-    private readonly SALE_EXCHANGE = 'sale.exchange';
-    private readonly SHIPPING_EXCHANGE = 'shipping.exchange';
+    constructor(
+        private readonly commonRabbitMQService: CommonRabbitMQService
+    ) { }
 
-    protected async setupInitialCreation() {
-        const channel = this.channel;
-        if (!channel) return;
+    async onModuleInit() {
+        try {
+            this.channel = await this.commonRabbitMQService.createChannel();
+            await this.setupInitialCreation();
+        } catch (error) {
+            this.logger.error("Failed to initialize RabbitMQ Service", error);
+        }
+    }
 
-        await this.setupExchangeQueueAndBind(this.queueName, this.USER_EXCHANGE, '', ExchangeTypeEnum.FANOUT);
-        await this.setupExchangeQueueAndBind(this.queueName, this.SALE_EXCHANGE, '', ExchangeTypeEnum.FANOUT);
-        await this.setupExchangeQueueAndBind(this.queueName, this.SHIPPING_EXCHANGE, '', ExchangeTypeEnum.FANOUT);
+    async onModuleDestroy() {
+        await this.channel?.close();
+    }
 
-        await this.setupRetryQueue(this.queueName);
+    private async setupInitialCreation() {
+        if (!this.channel) return;
+
+        const { queueName, exchanges } = billingRabbitMQConfig;
+
+        for (const exchange of exchanges) {
+            await this.commonRabbitMQService.setupExchangeQueueAndBind(
+                this.channel,
+                queueName,
+                exchange.name,
+                exchange.routingKey,
+                exchange.type
+            );
+        }
+
+        await this.commonRabbitMQService.setupRetryQueue(this.channel, queueName);
+    }
+
+    async consumeMessages<TPayload = unknown>(
+        callback: (data: RabbitMQConsumerMessage<TPayload>) => Promise<void>,
+    ) {
+        while (!this.channel) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        await this.commonRabbitMQService.consumeMessages(this.channel, billingRabbitMQConfig.queueName, callback);
+    }
+
+    async publishToExchange(
+        exchange: string,
+        routingKey: string,
+        message: RabbitMQConsumerMessage,
+        headers?: any
+    ) {
+        while (!this.channel) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        await this.commonRabbitMQService.publishToExchange(this.channel, exchange, routingKey, message, headers);
     }
 }

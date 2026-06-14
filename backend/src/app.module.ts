@@ -11,7 +11,8 @@ import { DataSourceOptions } from 'typeorm';
 import { BcryptService } from './common/infrastruture/services/bcrypt.service';
 import { AuthenticateMiddleware } from './common/infrastruture/middleware/authenticate.middleware';
 import { createTransactionalDataSource } from './common/infrastruture/services/typeorm.transactional';
-import { RabbitMQAbstractService } from './common/infrastruture/rabbit-mq/rabbit-mq.abstract.service';
+import { RabbitMQService } from './common/infrastruture/rabbit-mq/rabbit-mq.service';
+import { RabbitMQCommonModule } from './common/infrastruture/rabbit-mq/rabbit-mq.module';
 
 // User Module
 import { userDataSource } from './module/user-module/infrastructure/database/data-source';
@@ -61,6 +62,7 @@ import { ShipmentRabbitMQModule } from './module/shipment-module/infrastructure/
       // signOptions: { expiresIn: '60m' },
     }),
     ScheduleModule.forRoot(),
+    RabbitMQCommonModule,
 
     //User Modules
     TypeOrmModule.forRootAsync({
@@ -161,7 +163,7 @@ import { ShipmentRabbitMQModule } from './module/shipment-module/infrastructure/
 
 export class AppModule implements NestModule, OnModuleDestroy {
   async onModuleDestroy() {
-    await RabbitMQAbstractService.closeConnection();
+    await RabbitMQService.closeConnection();
   }
 
   configure(consumer: MiddlewareConsumer) {

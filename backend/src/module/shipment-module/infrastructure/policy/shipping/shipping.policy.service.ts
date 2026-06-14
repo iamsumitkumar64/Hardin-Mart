@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { OrderPlacedMQEventPayload, OrderBilledMQEventPayload } from "../../rabbit-mq/rabbit-mq.type";
+import type { OrderPlacedMQEventPayload, OrderBilledMQEventPayload } from "../../rabbit-mq/rabbit-mq.type";
 import { OutboxRepository } from "../../repository/outbox.repository";
 import { OrderPublishEventEnum } from "src/module/shipment-module/domain/order/order.event";
 import { OrderRepository } from "../../repository/order.repository";

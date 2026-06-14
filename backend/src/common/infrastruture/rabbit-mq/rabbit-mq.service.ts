@@ -1,48 +1,32 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import amqp, { Channel, ChannelModel } from "amqplib";
 import { ExchangeType, ExchangeTypeEnum, PublishHeadersInterface, RabbitMQConsumerMessage, RetryMechanismHeaderEnum } from "./rabbit-mq.type";
 
 let connection: ChannelModel | undefined;
 let isConnecting = false;
+let isClosing = false;
 
 @Injectable()
-export abstract class RabbitMQAbstractService implements OnModuleInit, OnModuleDestroy {
-    protected channel?: Channel;
-    protected readonly logger = new Logger();
-    private isClosing = false;
+export class RabbitMQService {
+    private readonly logger = new Logger(RabbitMQService.name);
 
     constructor() { }
 
-    protected abstract readonly queueName: string;
-
-    async onModuleInit() {
-        await this.connectToRabbitMQ();
-    }
-
-    async onModuleDestroy() {
-        await this.closeChannel();
-    }
-
-    async connectToRabbitMQ() {
-        if (this.channel) return;
-
+    async createChannel(): Promise<Channel> {
         try {
             const conn = await this.getOrCreateConnection();
-            this.channel = await conn.createChannel();
-            await this.setupInitialCreation();
+            const channel = await conn.createChannel();
 
-            await this.channel.prefetch(Number(process.env.RABBIT_MQ_PREFETCH_COUNT) || 25);
+            await channel.prefetch(Number(process.env.RABBIT_MQ_PREFETCH_COUNT) || 25);
 
-            this.channel.on('error', (err: any) => {
+            channel.on('error', (err: any) => {
                 this.logger.error('Channel error', err);
             });
 
-            this.logger.log("Connected to RabbitMQ and created the channel");
+            return channel;
         } catch (error) {
-            this.logger.error("Error connecting to RabbitMQ:", error);
-            if (!this.isClosing) {
-                setTimeout(() => this.connectToRabbitMQ(), 5000);
-            }
+            this.logger.error("Error creating RabbitMQ channel:", error);
+            throw error;
         }
     }
 
@@ -62,7 +46,7 @@ export abstract class RabbitMQAbstractService implements OnModuleInit, OnModuleD
 
             connection.on("close", () => {
                 connection = undefined;
-                if (this.isClosing) return;
+                if (isClosing) return;
                 this.logger.warn("Connection closed, reconnecting...");
             });
 
@@ -73,12 +57,9 @@ export abstract class RabbitMQAbstractService implements OnModuleInit, OnModuleD
         }
     }
 
-    protected abstract setupInitialCreation(): Promise<void>;
-
-    protected async setupRetryQueue(originalQueue: string, retryDelay = Number(process.env.RETRYDELAY) || 15000) {
-        if (!this.channel) return;
+    async setupRetryQueue(channel: Channel, originalQueue: string, retryDelay = Number(process.env.RETRYDELAY) || 15000) {
         const retryQueue = `${originalQueue}.retry`;
-        await this.channel.assertQueue(retryQueue, {
+        await channel.assertQueue(retryQueue, {
             durable: true,
             messageTtl: retryDelay,
             deadLetterExchange: "",
@@ -87,46 +68,45 @@ export abstract class RabbitMQAbstractService implements OnModuleInit, OnModuleD
     }
 
     async setupExchangeQueueAndBind(
+        channel: Channel,
         queue: string,
         exchange: string,
         routingKey: string,
         type: ExchangeType = ExchangeTypeEnum.DIRECT,
         headers?: PublishHeadersInterface
     ) {
-        if (!this.channel) return;
         try {
-            await this.channel.assertExchange(exchange, type, { durable: true, });
-            await this.channel.assertQueue(queue, {
+            await channel.assertExchange(exchange, type, { durable: true, });
+            await channel.assertQueue(queue, {
                 durable: true,
                 deadLetterExchange: "",
                 deadLetterRoutingKey: `${queue}.dlq`
             });
-            await this.channel.assertQueue(`${queue}.dlq`, { durable: true });
-            await this.channel.bindQueue(queue, exchange, routingKey, headers);
+            await channel.assertQueue(`${queue}.dlq`, { durable: true });
+            await channel.bindQueue(queue, exchange, routingKey, headers);
         } catch (error) {
             this.logger.error("Error while setting up queue:", error);
+            throw error;
         }
     }
 
     async consumeMessages<TPayload = unknown>(
+        channel: Channel,
+        queueName: string,
         callback: (data: RabbitMQConsumerMessage<TPayload>) => Promise<void>,
     ) {
         try {
-            while (!this.channel) {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-            }
-
-            await this.channel.consume(
-                this.queueName,
+            await channel.consume(
+                queueName,
                 async (msg) => {
                     if (!msg) return;
 
                     try {
                         const content = JSON.parse(msg.content.toString());
                         await callback(content);
-                        this.channel?.ack(msg);
+                        channel.ack(msg);
                     } catch (err) {
-                        this.logger.error(`Consumer error`, err);
+                        this.logger.error(`Consumer error on queue ${queueName}`, err);
 
                         const maxTries = Number(process.env.RABBIT_MQ_MAX_TRY) || 5;
                         const maxRequeues = Number(process.env.RABBIT_MQ_MAX_REQUEUE_TRY) || 3;
@@ -136,60 +116,54 @@ export abstract class RabbitMQAbstractService implements OnModuleInit, OnModuleD
                             try {
                                 const content = JSON.parse(msg.content.toString());
                                 await callback(content);
-                                this.channel?.ack(msg);
+                                channel.ack(msg);
                                 return;
                             } catch (error) { }
                         }
 
                         if (requeueTry + 1 < maxRequeues) {
-                            const retryQueue = `${this.queueName}.retry`;
-                            this.channel?.sendToQueue(retryQueue, msg.content, {
+                            const retryQueue = `${queueName}.retry`;
+                            channel.sendToQueue(retryQueue, msg.content, {
                                 persistent: true,
                                 headers: { ...msg.properties.headers, [RetryMechanismHeaderEnum.XREQUEUETRY]: requeueTry + 1 },
                             });
-                            this.channel?.ack(msg);
+                            channel.ack(msg);
                             return;
                         }
 
-                        this.channel?.nack(msg, false, false);
+                        channel.nack(msg, false, false);
                     }
                 },
                 { noAck: false },
             );
         } catch (error) {
-            this.logger.error("Error while consuming messages:", error);
+            this.logger.error(`Error while starting consumption on queue ${queueName}:`, error);
+            throw error;
         }
     }
 
     async publishToExchange(
+        channel: Channel,
         exchange: string,
         routingKey: string,
         message: RabbitMQConsumerMessage,
         headers?: PublishHeadersInterface
     ) {
-        if (!this.channel) return;
         try {
             const buffer = Buffer.from(JSON.stringify(message));
-            this.channel.publish(exchange, routingKey, buffer, {
+            channel.publish(exchange, routingKey, buffer, {
                 persistent: true,
                 headers: { ...headers, [RetryMechanismHeaderEnum.XREQUEUETRY]: 0 },
             });
         } catch (error) {
             this.logger.error("MQ Event Publish Error =>", error);
+            throw error;
         }
-    }
-
-    async closeChannel() {
-        try {
-            this.isClosing = true;
-            await this.channel?.close();
-            this.channel = undefined;
-            this.logger.log("RabbitMQ channel closed");
-        } catch (error) { }
     }
 
     static async closeConnection() {
         if (connection) {
+            isClosing = true;
             await connection.close();
             connection = undefined;
             Logger.log("RabbitMQ shared connection closed");
