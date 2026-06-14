@@ -1,17 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UserRegisteredMQEventPayload, OrderPlacedMQEventPayload, OrderBilledMQEventPayload, ShipmentEventPayload, ShipmentEventHandlerMap } from './rabbit-mq.type';
+import { UserRegisteredMQEventPayload, OrderPlacedMQEventPayload, OrderBilledMQEventPayload, ShipmentEventHandlerMap } from './rabbit-mq.type';
 import { UserRegisteredService } from 'src/module/shipment-module/feature/user/user-registered/user-registered.handler';
-import { OrderPlacedService } from 'src/module/shipment-module/feature/order/order-placed/order-placed.handler';
-import { OrderBilledService } from 'src/module/shipment-module/feature/order/order-billed/order-billed.handler';
 import { InboxRepository } from '../repository/inbox.repository';
 import { Transactional } from 'typeorm-transactional';
+import { ShippingPolicyService } from '../policy/shipping/shipping.policy.service';
 
 @Injectable()
 export class EventHandlerMapService {
     constructor(
         private readonly userRegisteredService: UserRegisteredService,
-        private readonly orderPlacedService: OrderPlacedService,
-        private readonly orderBilledService: OrderBilledService,
+        private readonly shippingPolicyService: ShippingPolicyService,
         private readonly inboxRepository: InboxRepository,
     ) { }
     private readonly logger = new Logger(EventHandlerMapService.name);
@@ -54,10 +52,10 @@ export class EventHandlerMapService {
     }
 
     async handleOrderPlaced(payload: OrderPlacedMQEventPayload) {
-        await this.orderPlacedService.handle(payload);
+        await this.shippingPolicyService.handleOrderPlaced(payload);
     }
 
     async handleOrderBilled(payload: OrderBilledMQEventPayload) {
-        await this.orderBilledService.handle(payload);
+        await this.shippingPolicyService.handleOrderBilled(payload);
     }
 }
