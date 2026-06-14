@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnModuleDestroy, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtModule } from '@nestjs/jwt';
@@ -11,6 +11,7 @@ import { DataSourceOptions } from 'typeorm';
 import { BcryptService } from './common/infrastruture/services/bcrypt.service';
 import { AuthenticateMiddleware } from './common/infrastruture/middleware/authenticate.middleware';
 import { createTransactionalDataSource } from './common/infrastruture/services/typeorm.transactional';
+import { RabbitMQAbstractService } from './common/infrastruture/rabbit-mq/rabbit-mq.abstract.service';
 
 // User Module
 import { userDataSource } from './module/user-module/infrastructure/database/data-source';
@@ -158,7 +159,11 @@ import { ShipmentRabbitMQModule } from './module/shipment-module/infrastructure/
   providers: [AppService, UserRepository, JwtHelperService],
 })
 
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnModuleDestroy {
+  async onModuleDestroy() {
+    await RabbitMQAbstractService.closeConnection();
+  }
+
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthenticateMiddleware)
