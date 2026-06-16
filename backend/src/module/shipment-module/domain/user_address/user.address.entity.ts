@@ -34,7 +34,7 @@ export class UserAddressEntity {
     country: string;
 
     @Column({ default: false })
-    isDefault: boolean;
+    is_default: boolean;
 
     @ManyToOne(() => UserEntity, (user) => user.addresses)
     @JoinColumn({ name: "customer_uuid" })

@@ -36,7 +36,7 @@ export default function UserAddressModal({ isOpen, onClose, onSelectAddress }: A
             state: "",
             postalCode: "",
             country: "",
-            isDefault: false,
+            is_default: false,
         },
     });
 
@@ -107,7 +107,7 @@ export default function UserAddressModal({ isOpen, onClose, onSelectAddress }: A
                         />
 
                         <FormControlLabel
-                            control={<Checkbox {...register("isDefault")} />}
+                            control={<Checkbox {...register("is_default")} />}
                             label="Set as default"
                         />
 
@@ -130,10 +130,10 @@ export default function UserAddressModal({ isOpen, onClose, onSelectAddress }: A
 
                     <List className={styles.addressList}>
                         {addresses?.map((addr: Address) => (
-                            <ListItem key={addr.uuid} className={addr.isDefault ? styles.DefaultlistItem : styles.listItem}>
+                            <ListItem key={addr.uuid} className={addr.is_default ? styles.DefaultlistItem : styles.listItem}>
                                 <ListItemText
                                     primary={`${addr.street}, ${addr.city}, ${addr.state}`}
-                                    secondary={`${addr.postalCode}, ${addr.country} ${addr.isDefault ? "(Default)" : ""
+                                    secondary={`${addr.postalCode}, ${addr.country} ${addr.is_default ? "(Default)" : ""
                                         }`}
                                 />
 

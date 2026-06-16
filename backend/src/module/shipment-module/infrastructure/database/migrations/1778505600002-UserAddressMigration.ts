@@ -15,7 +15,7 @@ export class userAddressMigration1778505600002 implements MigrationInterface {
                 { name: "state", type: "varchar", isNullable: false },
                 { name: "postalCode", type: "varchar", isNullable: false },
                 { name: "country", type: "varchar", isNullable: false },
-                { name: "isDefault", type: "boolean", default: false },
+                { name: "is_default", type: "boolean", default: false },
                 { name: "created_at", type: "timestamp", default: "now()" },
                 { name: "updated_at", type: "timestamp", default: "now()" },
                 { name: "deleted_at", type: "timestamp", isNullable: true }

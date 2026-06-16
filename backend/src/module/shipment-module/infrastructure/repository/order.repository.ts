@@ -58,7 +58,7 @@ export class OrderRepository extends Repository<OrderEntity> {
         return user;
     }
 
-    async getOrderListingFromMaterializedView(offset?: number, limit?: number) {
+    async getOrderListingFromMaterializedView(user: UserEntity, offset?: number, limit?: number) {
         const shipmentSchema = process.env.DB_POSTGRES_SHIPMENT_SCHEMA || 'shipment_schema';
         const orderView = process.env.DB_POSTGRES_ORDER_VIEW || "order_listing_mv";
         const currOffset = Number(offset) || Number(process.env.page_offset) || 0;
@@ -67,6 +67,9 @@ export class OrderRepository extends Repository<OrderEntity> {
         await this.dataSource.query(`REFRESH MATERIALIZED VIEW CONCURRENTLY ${shipmentSchema}.${orderView}`);
 
         const [data, total] = await this.dataSource.getRepository(OrderListingViewEntity).findAndCount({
+            where: {
+                customer_uuid: user.uuid,
+            },
             relations: {
                 address: true,
                 items: true

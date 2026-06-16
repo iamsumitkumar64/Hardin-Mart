@@ -1,21 +1,26 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common";
 import amqp, { Channel, ChannelModel } from "amqplib";
 import { ExchangeType, ExchangeTypeEnum, PublishHeadersInterface, RabbitMQConsumerMessage, RetryMechanismHeaderEnum } from "./rabbit-mq.type";
 
-let connection: ChannelModel | undefined;
-let isConnecting = false;
-let isClosing = false;
-
 @Injectable()
-export class RabbitMQService {
+export class RabbitMQService implements OnModuleDestroy {
     private readonly logger = new Logger(RabbitMQService.name);
+
+    private connection: ChannelModel | undefined;
+    private isConnecting = false;
+    private isClosing = false;
 
     constructor() { }
 
+    async onModuleDestroy(): Promise<void> {
+        await this.closeConnection();
+        this.logger.warn('RabbitMQ connection closed.');
+    }
+
     async createChannel(): Promise<Channel> {
         try {
-            const conn = await this.getOrCreateConnection();
-            const channel = await conn.createChannel();
+            const connection = await this.getOrCreateConnection();
+            const channel = await connection.createChannel();
 
             await channel.prefetch(Number(process.env.RABBIT_MQ_PREFETCH_COUNT) || 25);
 
@@ -31,29 +36,29 @@ export class RabbitMQService {
     }
 
     private async getOrCreateConnection(): Promise<ChannelModel> {
-        if (connection) return connection;
+        if (this.connection) return this.connection;
 
-        if (isConnecting) {
-            while (isConnecting) {
+        if (this.isConnecting) {
+            while (this.isConnecting) {
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
-            if (connection) return connection;
+            if (this.connection) return this.connection;
         }
 
-        isConnecting = true;
+        this.isConnecting = true;
         try {
-            connection = await amqp.connect(process.env.RABBIT_MQ_URL ?? "amqp://localhost:5672");
+            this.connection = await amqp.connect(process.env.RABBIT_MQ_URL ?? "amqp://localhost:5672");
 
-            connection.on("close", () => {
-                connection = undefined;
-                if (isClosing) return;
+            this.connection.on("close", () => {
+                this.connection = undefined;
+                if (this.isClosing) return;
                 this.logger.warn("Connection closed, reconnecting...");
             });
 
             this.logger.log("Connection created to RabbitMQ");
-            return connection;
+            return this.connection;
         } finally {
-            isConnecting = false;
+            this.isConnecting = false;
         }
     }
 
@@ -161,12 +166,12 @@ export class RabbitMQService {
         }
     }
 
-    static async closeConnection() {
-        if (connection) {
-            isClosing = true;
-            await connection.close();
-            connection = undefined;
-            Logger.log("RabbitMQ shared connection closed");
+    async closeConnection() {
+        if (this.connection) {
+            this.isClosing = true;
+            await this.connection.close();
+            this.connection = undefined;
+            this.logger.log("RabbitMQ shared connection closed");
         }
     }
 }

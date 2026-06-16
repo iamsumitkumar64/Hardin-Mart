@@ -6,7 +6,7 @@ export interface Address {
     state: string;
     postalCode: string;
     country: string;
-    isDefault: boolean;
+    is_default: boolean;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
@@ -24,7 +24,7 @@ export interface AddAddressPayload {
     state: string;
     postalCode: string;
     country: string;
-    isDefault?: boolean;
+    is_default?: boolean;
 }
 
 export interface UpdateAddressPayload {
@@ -34,7 +34,7 @@ export interface UpdateAddressPayload {
     state?: string;
     postalCode?: string;
     country?: string;
-    isDefault?: boolean;
+    is_default?: boolean;
 }
 
 export interface DeleteAddressPayload {

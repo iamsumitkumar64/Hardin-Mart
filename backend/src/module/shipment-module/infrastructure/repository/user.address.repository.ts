@@ -20,7 +20,7 @@ export class UserAddressRepository extends Repository<UserAddressEntity> {
     async findByUserUuid(customer_uuid: string, is_default?: boolean) {
         const criteria: any = { customer_uuid };
         if (typeof is_default === 'boolean') {
-            criteria.isDefault = is_default;
+            criteria.is_default = is_default;
         }
         const addresses = await this.find({ where: criteria });
         return addresses;
@@ -34,7 +34,7 @@ export class UserAddressRepository extends Repository<UserAddressEntity> {
         const defaultAddresses = await this.findByUserUuid(userUuid, true);
 
         for (const address of defaultAddresses) {
-            address.isDefault = false;
+            address.is_default = false;
             await this.save(address);
         }
     }

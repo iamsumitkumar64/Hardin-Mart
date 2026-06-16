@@ -23,5 +23,5 @@ export class CreateUserAddressDto {
 
     @IsBoolean()
     @IsOptional()
-    isDefault?: boolean;
+    is_default?: boolean;
 }

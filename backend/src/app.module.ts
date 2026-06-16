@@ -8,10 +8,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { DataSourceOptions } from 'typeorm';
 
 // Common Module
-import { BcryptService } from './common/infrastruture/services/bcrypt.service';
 import { AuthenticateMiddleware } from './common/infrastruture/middleware/authenticate.middleware';
 import { createTransactionalDataSource } from './common/infrastruture/services/typeorm.transactional';
-import { RabbitMQService } from './common/infrastruture/rabbit-mq/rabbit-mq.service';
 import { RabbitMQCommonModule } from './common/infrastruture/rabbit-mq/rabbit-mq.module';
 
 // User Module
@@ -161,11 +159,7 @@ import { ShipmentRabbitMQModule } from './module/shipment-module/infrastructure/
   providers: [AppService, UserRepository, JwtHelperService],
 })
 
-export class AppModule implements NestModule, OnModuleDestroy {
-  async onModuleDestroy() {
-    await RabbitMQService.closeConnection();
-  }
-
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthenticateMiddleware)

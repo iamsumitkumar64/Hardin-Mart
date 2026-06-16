@@ -45,16 +45,17 @@ export class EventHandlerMapService {
     async executeHandler(eventName: string, payload: any, outbox_uuid: string) {
         const handlers = this.eventHandlerMap[eventName];
         if (!handlers || !handlers.length) {
-            this.logger.verbose(`No handler found for event: ${eventName} in Sale Module`);
+            this.logger.debug(`No handler found for event: ${eventName} in Sale Module`);
             return;
         }
 
         const alreadyProcessed = await this.inboxRepository.findByOutboxUuid(outbox_uuid);
         if (alreadyProcessed) {
+            this.logger.debug(`Duplicated event: ${eventName} in Sale Module`);
             return;
         }
         for (const handler of handlers) {
-            await handler.call(this, payload, outbox_uuid, eventName);
+            await handler(payload, outbox_uuid, eventName);
         }
         await this.inboxRepository.createEntry({ outbox_uuid, event_name: eventName });
     }
