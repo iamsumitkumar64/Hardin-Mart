@@ -6,7 +6,7 @@ export const addressSchema = z.object({
     state: z.string().min(1, "State is required"),
     postalCode: z.string().min(1, "Postal code is required"),
     country: z.string().min(1, "Country is required"),
-    isDefault: z.boolean().optional(),
+    is_default: z.boolean().optional(),
 });
 
 export type AddressFormData = z.infer<typeof addressSchema>;

@@ -19,7 +19,7 @@ export class CatalogRabbitMQConsumerInitializer implements OnModuleInit {
             async (data) => {
                 const { outbox_uuid, event_name, payload } = data;
 
-                this.logger.log(`Processing event: ${event_name} (${outbox_uuid})`);
+                this.logger.log(`Processing event-> ${event_name} of outbox_uuid -> (${outbox_uuid})`);
 
                 try {
                     await this.eventHandlerMapService.executeHandler(event_name, payload, outbox_uuid);

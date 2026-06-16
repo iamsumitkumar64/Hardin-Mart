@@ -12,7 +12,7 @@ export class CreateUserAddressService {
     ) { }
 
     async handle(user: UserEntity, body: CreateUserAddressDto) {
-        if (body.isDefault) {
+        if (body.is_default) {
             await this.userAddressRepository.unsetOtherDefaults(user.uuid);
         }
 

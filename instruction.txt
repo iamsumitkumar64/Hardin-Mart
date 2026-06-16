@@ -1,14 +1,16 @@
-
-steps to run this repo code (open 2 terminal)
+Steps To Run This Repo Code (Open 2 Terminal)
+0. -> create 3 duplicate envs in 3 places
 1. -> docker compose up --build (1st terminal command)
 2. -> docker compose exec backend sh (2nd terminal command)
 
-For Creation
+
+For DB Migration 
 3. user Module -> npm run build && npm run migration:user:run && npm run seed:user:user
 4. Catalog Module -> npm run build && npm run migration:catalog:run && npm run seed:catalog:user && npm run seed:catalog:product
 6. Sale Module -> npm run build && npm run migration:sale:run && npm run seed:sale:user && npm run seed:sale:product
 7. Biiling Module-> npm run build && npm run migration:billing:run && npm run seed:billing:user
 8. Shipment Module-> npm run build && npm run migration:shipment:run && npm run seed:shipment:user && npm run seed:shipment:product
 
-One Click Copy Paste above commands
+
+One Click Copy Paste Above Commands into Single Copy Command
 npm run build && npm run migration:user:run && npm run seed:user:user && npm run migration:catalog:run && npm run seed:catalog:user && npm run seed:catalog:product && npm run migration:sale:run && npm run seed:sale:user && npm run seed:sale:product && npm run migration:billing:run && npm run seed:billing:user && npm run migration:shipment:run && npm run seed:shipment:user && npm run seed:shipment:product
